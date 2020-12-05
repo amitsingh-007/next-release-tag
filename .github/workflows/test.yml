@@ -1,0 +1,19 @@
+name: Github Action
+on: push
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo 🛎️
+        uses: actions/checkout@v2
+
+      - name: Setting up Node.js 🔧
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Auto Generate Next Release Tag 🚀
+        uses: amitsingh-007/next-release-tag@v0.0.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
