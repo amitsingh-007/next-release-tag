@@ -6,10 +6,11 @@ const generateNextReleaseTag = async () => {
     const github_token = core.getInput("github_token");
     const octokit = github.getOctokit(github_token);
     const { owner, repo } = github.context.repo;
-    const { name, tag_name } = await octokit.repos.getLatestRelease({
+    const response = await octokit.repos.getLatestRelease({
       owner,
       repo,
     });
+    const { name, tag_name } = response.data;
     console.log(`name: ${name}`);
     console.log(`tag_name: ${tag_name}`);
     core.setOutput("previous_tag", tag_name);
@@ -19,4 +20,5 @@ const generateNextReleaseTag = async () => {
     core.setFailed(error.message);
   }
 };
+
 generateNextReleaseTag();
