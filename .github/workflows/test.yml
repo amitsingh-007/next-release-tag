@@ -14,7 +14,7 @@ jobs:
           node-version: "12.x"
 
       - name: Auto Generate Next Release Tag 🚀
-        uses: amitsingh-007/next-release-tag@v0.0.10
+        uses: amitsingh-007/next-release-tag@v0.0.11
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
