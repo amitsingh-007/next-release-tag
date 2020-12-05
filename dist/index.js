@@ -26,7 +26,7 @@ const generateNewTagFromOld = (oldYear, oldMonth, oldItr) => {
 };
 
 const getNewReleaseTag = (oldReleaseTag) => {
-  if (oldReleaseTag & oldReleaseTag.startsWith("v")) {
+  if (oldReleaseTag && oldReleaseTag.startsWith("v")) {
     const [oldYear, oldMonth, oldItr] = oldReleaseTag
       .substring(1)
       .split(".")
@@ -46,7 +46,7 @@ const generateNextReleaseTag = async () => {
       repo,
     });
     const { tag_name: oldReleaseTag } = response.data;
-    const newReleaseTag = getNewReleaseTag();
+    const newReleaseTag = getNewReleaseTag(oldReleaseTag);
     console.log(`Previous Release Tag: ${oldReleaseTag}`);
     console.log(`New Release Tag: ${newReleaseTag}`);
     core.exportVariable("release_tag", newReleaseTag);

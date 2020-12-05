@@ -18,5 +18,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: check env var
+      - name: Check ENV var 🌴
         run: echo "${{ env.release_tag }}"
