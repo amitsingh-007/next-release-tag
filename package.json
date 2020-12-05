@@ -7,7 +7,8 @@
   "license": "ISC",
   "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
   "scripts": {
-    "build": "eslint . && ncc build index.js -o dist"
+    "eslint": "eslint .",
+    "build": "npm run eslint && ncc build index.js -o dist"
   },
   "dependencies": {
     "@actions/core": "1.2.6",
@@ -15,6 +16,6 @@
   },
   "devDependencies": {
     "@vercel/ncc": "0.25.1",
-    "eslint": "7.15.0"
+    "eslint": "^7.15.0"
   }
 }
