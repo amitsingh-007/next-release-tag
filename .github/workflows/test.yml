@@ -17,3 +17,6 @@ jobs:
         uses: amitsingh-007/next-release-tag@v0.0.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: check env var
+        run: echo "${{ env.release_tag }}"
