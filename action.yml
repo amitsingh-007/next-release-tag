@@ -12,4 +12,5 @@ outputs:
     description: "Next release tag"
 
 runs:
+  using: "node12"
   main: "dist/index.js"
