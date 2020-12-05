@@ -18,6 +18,7 @@ const generateNextReleaseTag = async () => {
 
 try {
   generateNextReleaseTag();
+  core.exportVariable("release_tag", "v1.0.8")
 } catch (error) {
   core.setFailed(error.message);
 }
