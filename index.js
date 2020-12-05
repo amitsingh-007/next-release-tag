@@ -3,7 +3,7 @@ const github = require("@actions/github");
 
 const generateNewTagFromOld = (oldYear, oldMonth, oldItr) => {
   const curDate = new Date();
-  const curMonth = curDate.getMonth();
+  const curMonth = curDate.getMonth() + 1;
   const curYear = curDate.getFullYear() % 100;
   let newYear = curYear;
   let newMonth = curMonth;
