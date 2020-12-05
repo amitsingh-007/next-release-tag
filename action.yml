@@ -5,6 +5,11 @@ branding:
   color: "purple"
   icon: "tag"
 
+inputs:
+  github_token:
+    description: "Github secrets token"
+    required: true
+
 outputs:
   previous_tag:
     description: "Previous release tag"
