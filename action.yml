@@ -10,12 +10,6 @@ inputs:
     description: "Github secrets token"
     required: true
 
-outputs:
-  previous_tag:
-    description: "Previous release tag"
-  next_tag:
-    description: "Next release tag"
-
 runs:
   using: "node12"
   main: "dist/index.js"
