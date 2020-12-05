@@ -1,0 +1,20 @@
+{
+  "name": "next-release-tag",
+  "version": "1.0.0",
+  "description": "Github Action to generate next Release Tag",
+  "main": "index.js",
+  "author": "amitsingh-007",
+  "license": "ISC",
+  "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
+  "scripts": {
+    "build": "eslint . && ncc build index.js -o dist"
+  },
+  "dependencies": {
+    "@actions/core": "1.2.6",
+    "@actions/github": "4.0.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "0.25.1",
+    "eslint": "7.15.0"
+  }
+}

@@ -1,0 +1,14 @@
+name: "Auto Generate Next Release Tag"
+description: "Automatically generate next release tag incrementally with date/month/year and based on previous tag."
+author: "amitsingh-007"
+branding:
+  color: "purple"
+  icon: "tag"
+
+outputs:
+  previous_tag:
+    description: "Previous release tag"
+  next_tag:
+    description: "Next release tag"
+
+main: "dist/index.js"
