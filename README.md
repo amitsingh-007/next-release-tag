@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate release tag
-        uses: amitsingh-007/next-release-tag@v<latest-version>
+        uses: amitsingh-007/next-release-tag@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
