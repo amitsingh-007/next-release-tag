@@ -11,7 +11,7 @@ jobs:
       - name: Setting up Node.js 🔧
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: "14.x"
 
       - name: Auto Generate Next Release Tag 🚀
         uses: amitsingh-007/next-release-tag@v1.0.0
