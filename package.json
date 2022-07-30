@@ -4,7 +4,7 @@
   "description": "Github Action to generate next Release Tag",
   "main": "index.js",
   "author": "amitsingh-007",
-  "license": "ISC",
+  "license": "MIT-open-group",
   "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
   "scripts": {
     "eslint": "eslint .",
