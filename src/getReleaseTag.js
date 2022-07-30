@@ -15,7 +15,7 @@ const generateNewTagFromOld = (oldYear, oldMonth, oldItr) => {
   return `v${newYear}.${newMonth}.${newItr}`;
 };
 
-export default function getNewReleaseTag(oldReleaseTag) {
+const getNewReleaseTag = (oldReleaseTag) => {
   if (oldReleaseTag && oldReleaseTag.startsWith("v")) {
     const [oldYear, oldMonth, oldItr] = oldReleaseTag
       .substring(1)
@@ -24,4 +24,6 @@ export default function getNewReleaseTag(oldReleaseTag) {
     return generateNewTagFromOld(oldYear, oldMonth, oldItr);
   }
   return generateNewTagFromOld(-1, -1, -1);
-}
+};
+
+module.exports = getNewReleaseTag;
