@@ -34,7 +34,7 @@ const generateNextReleaseTag = async () => {
     const github_token = core.getInput("github_token");
     const octokit = github.getOctokit(github_token);
     const { owner, repo } = github.context.repo;
-    const response = await octokit.repos.getLatestRelease({
+    const response = await octokit.rest.repos.getLatestRelease({
       owner,
       repo,
     });
