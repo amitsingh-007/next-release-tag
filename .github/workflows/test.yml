@@ -13,8 +13,8 @@ jobs:
         with:
           node-version: "14.x"
 
-      - name: Auto Generate Next Release Tag 🚀
-        uses: amitsingh-007/next-release-tag@v1.0.0
+      - name: Sanity testing of the action 🚀
+        uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
