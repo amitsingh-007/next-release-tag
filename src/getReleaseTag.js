@@ -26,4 +26,4 @@ const getNewReleaseTag = (oldReleaseTag) => {
   return generateNewTagFromOld(-1, -1, -1);
 };
 
-module.exports = getNewReleaseTag;
+export default getNewReleaseTag;
