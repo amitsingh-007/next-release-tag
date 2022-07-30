@@ -6,7 +6,7 @@
   "license": "MIT-open-group",
   "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
   "scripts": {
-    "build": "ncc build src/index.js --out dist --target es12",
+    "build": "ncc build src/index.js --out dist",
     "clean": "rm -r dist",
     "dist": "npm run eslint && npm test && npm run clean && npm run build",
     "eslint": "eslint .",
