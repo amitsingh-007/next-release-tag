@@ -9502,7 +9502,7 @@ const generateNewTagFromOld = (oldYear, oldMonth, oldItr) => {
   return `v${newYear}.${newMonth}.${newItr}`;
 };
 
-const getNewReleaseTag = (oldReleaseTag) => {
+const getNewReleaseTag = oldReleaseTag) => {
   if (oldReleaseTag && oldReleaseTag.startsWith("v")) {
     const [oldYear, oldMonth, oldItr] = oldReleaseTag
       .substring(1)
