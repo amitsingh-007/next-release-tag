@@ -13,15 +13,8 @@ jobs:
         with:
           node-version: "14.x"
 
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
-      - name: Check outputs
-        run: echo ${{ steps.vars.outputs.sha_short }}
-
       - name: Auto Generate Next Release Tag 🚀
-        uses: amitsingh-007/next-release-tag@v2.0.0
+        uses: ./dist/index.js
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
