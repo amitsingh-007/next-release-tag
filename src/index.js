@@ -11,6 +11,7 @@ const generateNextReleaseTag = async () => {
       owner,
       repo,
     });
+    console.log("Response", response);
     const { tag_name: oldReleaseTag } = response.data;
     const newReleaseTag = getNewReleaseTag(oldReleaseTag);
     console.log(`Previous Release Tag: ${oldReleaseTag}`);
