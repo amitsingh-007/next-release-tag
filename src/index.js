@@ -7,6 +7,7 @@ const generateNextReleaseTag = async () => {
     const github_token = getInput("github_token");
     const octokit = getOctokit(github_token);
     const { owner, repo } = context.repo;
+    console.log("Before call");
     const response = await octokit.rest.repos.getLatestRelease({
       owner,
       repo,
@@ -18,7 +19,7 @@ const generateNextReleaseTag = async () => {
     console.log(`New Release Tag: ${newReleaseTag}`);
     exportVariable("release_tag", newReleaseTag);
   } catch (error) {
-    setFailed(error.message);
+    setFailed(error);
   }
 };
 
