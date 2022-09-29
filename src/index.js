@@ -21,8 +21,8 @@ const generateNextReleaseTag = async () => {
   } catch (error) {
     console.log(error);
     console.log(JSON.stringify(error));
-    console.log(error?.response);
-    console.log(error?.data);
+    console.log(error.response);
+    console.log(error.data);
     setFailed(error);
   }
 };
