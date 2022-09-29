@@ -20,8 +20,9 @@ const generateNextReleaseTag = async () => {
     exportVariable("release_tag", newReleaseTag);
   } catch (error) {
     console.log(error);
-    console.log({ error });
-    console.log(error.message);
+    console.log(JSON.stringify(error));
+    console.log(error?.response);
+    console.log(error?.data);
     setFailed(error);
   }
 };
