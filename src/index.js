@@ -1,17 +1,10 @@
-import { getInput, exportVariable, setFailed } from "@actions/core";
-import { getOctokit, context } from "@actions/github";
+import { exportVariable, setFailed } from "@actions/core";
+import fetchLatestReleaseTag from "./fetchLatestReleaseTag";
 import getNewReleaseTag from "./getReleaseTag";
 
 const generateNextReleaseTag = async () => {
   try {
-    const github_token = getInput("github_token");
-    const octokit = getOctokit(github_token);
-    const { owner, repo } = context.repo;
-    const response = await octokit.rest.repos.getLatestRelease({
-      owner,
-      repo,
-    });
-    const { tag_name: oldReleaseTag } = response.data;
+    const oldReleaseTag = await fetchLatestReleaseTag();
     const newReleaseTag = getNewReleaseTag(oldReleaseTag);
     console.log(`Previous Release Tag: ${oldReleaseTag}`);
     console.log(`New Release Tag: ${newReleaseTag}`);
