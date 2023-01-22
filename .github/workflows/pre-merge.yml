@@ -30,6 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Sanity testing of the action
+        id: generate_release_tag
         uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -37,10 +38,10 @@ jobs:
       - name: Print output
         run: |
           echo "Expected output: ${{ inputs.expected_release_tag }}"
-          echo "Actual output: ${{ env.release_tag }}"
+          echo "Actual output: ${{ steps.generate_release_tag.outputs.release_tag }}"
 
       - name: Fail if mismatch
-        if: ${{ inputs.expected_release_tag != env.release_tag }}
+        if: ${{ inputs.expected_release_tag != steps.generate_release_tag.outputs.release_tag }}
         uses: actions/github-script@v6
         with:
           script: |
