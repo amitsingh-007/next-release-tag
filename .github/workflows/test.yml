@@ -1,22 +1,40 @@
-name: Github Action
-on: push
+name: Test
+on:
+  push:
+    branches-ignore:
+      - 'master'
 
 jobs:
   Test:
-    runs-on: ubuntu-latest
+    name: OS ${{ matrix.os }} + node ${{ matrix.node }}
+    strategy:
+      matrix:
+        node: [14, 16, 18]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repo 🛎️
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setting up Node.js 🔧
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Setting up Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
-          node-version: "14.x"
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
 
-      - name: Sanity testing of the action 🚀
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sanity testing of the action
+        id: generate_release_tag
         uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check ENV var 🌴
-        run: echo "${{ env.release_tag }}"
+      - name: Manually check release tag
+        run: echo "${{ steps.generate_release_tag.outputs.release_tag }}"

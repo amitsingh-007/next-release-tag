@@ -1,15 +1,19 @@
-name: "Auto Generate Next Release Tag"
-description: "Automatically generate next release tag incrementally with year, month and iteration based on previous release tag."
-author: "amitsingh-007"
+name: 'Auto Generate Next Release Tag'
+description: 'Automatically generate next release tag incrementally with year, month and iteration based on previous release tag.'
+author: 'amitsingh-007'
 branding:
-  color: "red"
-  icon: "tag"
+  color: 'red'
+  icon: 'tag'
 
 inputs:
   github_token:
-    description: "Github secrets token"
+    description: 'Github secrets token'
     required: true
+  tag_prefix:
+    description: 'Prefix added to the generated release tag'
+    required: false
+    default: 'v'
 
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'node16'
+  main: 'dist/index.js'
