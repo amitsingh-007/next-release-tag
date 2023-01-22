@@ -36,7 +36,7 @@ jobs:
 
       - name: Print output
         run: |
-          echo "Expected output: ${{ inputs.print_tags }}"
+          echo "Expected output: ${{ inputs.expected_release_tag }}"
           echo "Actual output: ${{ env.release_tag }}"
 
       - name: Fail if mismatch
