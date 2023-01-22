@@ -7,14 +7,11 @@ on:
 jobs:
   Test:
     name: OS ${{ matrix.os }} + node ${{ matrix.node }}
-
     strategy:
       matrix:
         node: [14, 16, 18]
         os: [ubuntu-latest, windows-latest, macos-latest]
-
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
