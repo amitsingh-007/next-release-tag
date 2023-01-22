@@ -1,7 +1,7 @@
 # Generate Next Release Tag
 
 - A GitHub Action to automate the process of creating the next release tag version for your repository. Note: this only generates a new release version instead of creating a new release.
-- This action will set an environment variable named `release_tag` which can then be used to create the next release.
+- This action will set an output variable named `release_tag` which can then be used to create the next release.
 - It uses the previous release tag and increments over it based on year, month and iteration count.
 - Template of release tag will be: `<prefix>yy.mm.i`, where prefix=v(default), yy=year, mm=month, i=iteration. Set prefix as '' to remove prefix.
 - For example, third release in December 2022 with default pefix will be: `v22.12.3`.
@@ -16,7 +16,7 @@ tag_prefix: Prefix added to the generated release tag. Optional. Defaults to 'v'
 
 ## Outputs
 
-Sets an environment variable named `release_tag` which contains the next release version.
+Sets an output variable named `release_tag` which contains the next release version. This can be accessed via `step.<id>.outputs.release_tag`.
 
 ## Example workflow
 
@@ -34,6 +34,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate release tag
+        id: generate_release_tag
         uses: amitsingh-007/next-release-tag@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,6 +45,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.release_tag }}
-          release_name: Release ${{ env.release_tag }}
+          tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
+          release_name: Release ${{ steps.generate_release_tag.outputs.release_tag }}
 ```

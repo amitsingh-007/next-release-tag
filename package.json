@@ -6,14 +6,16 @@
   "license": "MIT-open-group",
   "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
   "scripts": {
-    "build": "ncc build src/index.ts --minify --license licenses.txt",
+    "build": "pnpm clean && ncc build src/index.ts --minify --license licenses.txt",
+    "clean": "rimraf dist/",
     "dist": "pnpm lint && pnpm test && pnpm build",
     "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
     "@actions/core": "1.10.0",
-    "@actions/github": "5.1.1"
+    "@actions/github": "5.1.1",
+    "rimraf": "4.1.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "5.48.2",
