@@ -10,9 +10,9 @@
 
 ## Inputs
 
-github_token: Github Secret `GITHUB_TOKEN` or `Personal Access Token` which must be passed.
+`github_token`: Github Secret `GITHUB_TOKEN` or `Personal Access Token` which must be passed.
 
-tag_prefix: Prefix added to the generated release tag. Optional. Defaults to 'v'. Pass '' to remove prefix in the generated output.
+`tag_prefix`: Prefix added to the generated release tag. Optional. Defaults to 'v'. Pass '' to remove prefix in the generated output.
 
 ## Outputs
 
