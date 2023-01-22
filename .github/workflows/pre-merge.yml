@@ -44,4 +44,4 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            core.setFailed('Actual and expected output doesn't match')
+            core.setFailed('Actual and expected output doesnt match')
