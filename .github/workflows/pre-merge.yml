@@ -45,3 +45,12 @@ jobs:
         with:
           script: |
             core.setFailed('Actual and expected output doesnt match')
+
+      - name: Add status check
+        uses: LouisBrunner/checks-action@v1.3.1
+        if: always()
+        with:
+          sha: ${{ github.sha }}
+          token: ${{ github.token }}
+          name: Pre Merge Check
+          conclusion: ${{ job.status }}
