@@ -7,7 +7,7 @@
   "homepage": "https://github.com/amitsingh-007/next-release-tag#readme",
   "scripts": {
     "build": "ncc build src/index.ts --minify --license licenses.txt",
-    "dist": "npm run lint && npm test && npm run build",
+    "dist": "pnpm lint && pnpm test && pnpm build",
     "lint": "eslint .",
     "test": "vitest run"
   },
