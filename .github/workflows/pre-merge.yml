@@ -3,8 +3,8 @@ name: Pre Merge
 on:
   workflow_dispatch:
     inputs:
-      expected_output:
-        description: Expected output release tag
+      expected_release_tag:
+        description: Expected release tag
         required: true
         type: string
 
@@ -40,7 +40,7 @@ jobs:
           echo "Actual output: ${{ env.release_tag }}"
 
       - name: Fail if mismatch
-        if: ${{ inputs.print_tags }} != ${{ env.release_tag }}
+        if: ${{ inputs.expected_release_tag }} != ${{ env.release_tag }}
         uses: actions/github-script@v6
         with:
           script: |
