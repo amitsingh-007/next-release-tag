@@ -5,12 +5,11 @@ on:
       - 'main'
 
 jobs:
-  strategy:
-    matrix:
-      node: [12, 14, 16, 18]
-      os: [ubuntu-latest, windows-latest, macos-latest]
-
   Test:
+    strategy:
+      matrix:
+        node: [12, 14, 16, 18]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repo
