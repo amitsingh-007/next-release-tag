@@ -13,12 +13,14 @@ specifiers:
   eslint-plugin-import: 2.27.5
   eslint-plugin-prettier: 4.2.1
   prettier: 2.8.3
+  rimraf: 4.1.1
   typescript: 4.9.4
   vitest: 0.27.3
 
 dependencies:
   '@actions/core': 1.10.0
   '@actions/github': 5.1.1
+  rimraf: 4.1.1
 
 devDependencies:
   '@typescript-eslint/eslint-plugin': 5.48.2_caon6io6stgpr7lz2rtbhekxqy
@@ -1889,6 +1891,12 @@ packages:
     dependencies:
       glob: 7.2.3
     dev: true
+
+  /rimraf/4.1.1:
+    resolution: {integrity: sha512-Z4Y81w8atcvaJuJuBB88VpADRH66okZAuEm+Jtaufa+s7rZmIz+Hik2G53kGaNytE7lsfXyWktTmfVz0H9xuDg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: false
 
   /rollup/3.10.1:
     resolution: {integrity: sha512-3Er+yel3bZbZX1g2kjVM+FW+RUWDxbG87fcqFM5/9HbPCTpbVp6JOLn7jlxnNlbu7s/N/uDA4EV/91E2gWnxzw==}
