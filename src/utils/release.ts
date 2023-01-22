@@ -1,8 +1,14 @@
-export const generateNewTagFromOld = (
-  oldYear: number,
-  oldMonth: number,
-  oldItr: number
-) => {
+export const generateNewTagFromOld = ({
+  oldYear,
+  oldMonth,
+  oldItr,
+  tagPrefix,
+}: {
+  oldYear: number;
+  oldMonth: number;
+  oldItr: number;
+  tagPrefix: string;
+}) => {
   const curDate = new Date();
   const curMonth = curDate.getMonth() + 1;
   const curYear = curDate.getFullYear() % 100;
@@ -16,5 +22,5 @@ export const generateNewTagFromOld = (
   if (curYear !== oldYear) {
     newYear = curYear;
   }
-  return `v${newYear}.${newMonth}.${newItr}`;
+  return `${tagPrefix}${newYear}.${newMonth}.${newItr}`;
 };

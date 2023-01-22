@@ -3,7 +3,7 @@ import { context, getOctokit } from '@actions/github';
 
 export const fetchLatestReleaseTag = async () => {
   try {
-    const githubToken = getInput('github_token');
+    const githubToken = getInput('github_token', { required: true });
     const octokit = getOctokit(githubToken);
     const { owner, repo } = context.repo;
     const response = await octokit.rest.repos.getLatestRelease({
