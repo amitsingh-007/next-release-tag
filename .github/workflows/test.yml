@@ -6,7 +6,7 @@ on:
 
 jobs:
   Test:
-    name: OS ${{ matrix.os }} using node ${{ matrix.node }}
+    name: OS ${{ matrix.os }} + node ${{ matrix.node }}
 
     strategy:
       matrix:
