@@ -36,5 +36,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Manually check ENV var
+      - name: Manually check release tag
         run: echo "${{ steps.generate_release_tag.outputs.release_tag }}"
