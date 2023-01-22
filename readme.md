@@ -6,6 +6,7 @@
 - Template of release tag will be: `vyy.mm.i`, where v=prefix, yy=year, mm=month, i=iteration.
 - For example, third release in December 2022 will be: `v22.12.3`.
 - This action is recommended to be used with `actions/create-release` to create a release.
+- Minimum supported nodejs version is v14.
 
 ## Inputs
 
