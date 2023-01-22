@@ -1,0 +1,46 @@
+name: Pre Merge
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_output:
+        description: Expected output release tag
+        required: true
+        type: string
+
+jobs:
+  Pre_Merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Setting up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sanity testing of the action
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print output
+        run: |
+          echo "Expected output: ${{ inputs.print_tags }}"
+          echo "Actual output: ${{ env.release_tag }}"
+      - name: Fail if mismatch
+        if: ${{ inputs.print_tags }} != ${{ env.release_tag }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Actual and expected output doesn't match')
