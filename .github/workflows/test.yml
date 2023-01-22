@@ -38,5 +38,17 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Sanity testing of the action
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ''
+
+      - name: Sanity testing of the action
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: 'abc@123'
+
       - name: Manually check ENV var
         run: echo "${{ env.release_tag }}"
