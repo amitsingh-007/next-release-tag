@@ -11,6 +11,7 @@ const generateNextReleaseTag = async (): Promise<void> => {
     console.log(`Previous Release Tag: ${oldReleaseTag}`);
     console.log(`New Release Tag: ${newReleaseTag}`);
 
+    setOutput('prev_release_tag', oldReleaseTag);
     setOutput('release_tag', newReleaseTag);
   } catch (error) {
     if (error instanceof Error) setFailed(error.message);
