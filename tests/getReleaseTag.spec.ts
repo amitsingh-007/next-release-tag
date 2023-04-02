@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import getReleaseTag from '../src/services/releaseService';
+import { getNewReleaseTag } from '../src/services/releaseService';
+import { validTemplates } from './testData';
+import { getTestCase } from './utils/testCase';
+import { AllowedParts, IAllowedTemplate } from '../src/types';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -10,95 +13,292 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe('test with prefix', () => {
-  it.each([
-    [undefined],
-    [null],
-    ['abc'],
-    ['1.0.0'],
-    ['22.1.6'],
-    ['v'],
-    ['v2'],
-    ['v2.1'],
-    ['v2.1.1.5'],
-    ['v22.11.3-beta'],
-  ])(
-    'should return first version when invalid version is passed',
-    (input: string | null | undefined) => {
+describe('test valid cases without prefix', () => {
+  it.each(validTemplates)(
+    'should return changed itr for same date for template: %s',
+    (template) => {
       vi.setSystemTime(new Date('2022-10-13'));
-      expect(getReleaseTag('v', input)).toBe('v22.10.1');
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldItr: 4,
+        newItr: 5,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
     }
   );
-
-  it('should throw exception when malformed version is passed', () => {
-    vi.setSystemTime(new Date('2022-10-13'));
-    expect(getReleaseTag('v', 'v2.1')).toBe('v22.10.1');
-  });
-
-  it('should return version with same month and year with incremented iteration', () => {
-    vi.setSystemTime(new Date('2022-11-24'));
-    expect(getReleaseTag('v', 'v22.11.5')).toBe('v22.11.6');
-  });
-
-  it.each([['v22.10.23'], ['v22.2.21']])(
-    'should return version with reset iteration, current month and same year',
-    (input: string | null | undefined) => {
-      vi.setSystemTime(new Date('2022-11-24'));
-      expect(getReleaseTag('v', input)).toBe('v22.11.1');
+  it.each(validTemplates)(
+    'should return reset itr for changed day for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2022-10-13'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-10-10'),
+        oldItr: 4,
+        newItr: template.includes(IAllowedTemplate.day) ? 1 : 5,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
     }
   );
-
-  it.each([['v22.12.2'], ['v20.05.14']])(
-    'should return version with reset iteration, current month and year',
-    (input: string | null | undefined) => {
-      vi.setSystemTime(new Date('2023-01-02'));
-      expect(getReleaseTag('v', input)).toBe('v23.1.1');
+  it.each(validTemplates)(
+    'should return reset itr for changed month for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2022-10-12'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-01-12'),
+        oldItr: 1,
+        newItr: template.includes(IAllowedTemplate.month) ? 1 : 2,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-09-28'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-09-28'),
+        oldItr: 41,
+        newItr:
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear)
+            ? 1
+            : 42,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed month/year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-04-18'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-11-18'),
+        oldItr: 166,
+        newItr:
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear) ||
+          template.includes(IAllowedTemplate.month)
+            ? 1
+            : 167,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed date/month for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-06-15'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2023-03-25'),
+        oldItr: 5,
+        newItr:
+          template.includes(IAllowedTemplate.day) ||
+          template.includes(IAllowedTemplate.month)
+            ? 1
+            : 6,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed date/year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-12-11'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2021-12-17'),
+        oldItr: 12,
+        newItr:
+          template.includes(IAllowedTemplate.day) ||
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear)
+            ? 1
+            : 13,
+      });
+      const actualTag = getNewReleaseTag('', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
     }
   );
 });
 
-describe('test without prefix', () => {
-  it.each([
-    [undefined],
-    [null],
-    ['1.0.0'],
-    ['v22.1.6'],
-    ['v'],
-    ['2'],
-    ['2.1'],
-    ['2.1.1.5'],
-    ['22.11.3-beta'],
-  ])(
-    'should return first version when invalid version is passed',
-    (input: string | null | undefined) => {
+describe('test valid cases with prefix', () => {
+  it.each(validTemplates)(
+    'should return changed itr for same date for template: %s',
+    (template) => {
       vi.setSystemTime(new Date('2022-10-13'));
-      expect(getReleaseTag('', input)).toBe('22.10.1');
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldItr: 4,
+        newItr: 5,
+        prefix: 'v',
+      });
+      const actualTag = getNewReleaseTag('v', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
     }
   );
-
-  it('should not throw exception when malformed version is passed', () => {
-    vi.setSystemTime(new Date('2022-10-13'));
-    expect(getReleaseTag('', '2.1')).toBe('22.10.1');
-  });
-
-  it('should return version with same month and year with incremented iteration', () => {
-    vi.setSystemTime(new Date('2022-11-24'));
-    expect(getReleaseTag('', '22.11.5')).toBe('22.11.6');
-  });
-
-  it.each([['22.10.23'], ['22.2.21']])(
-    'should return version with reset iteration, current month and same year',
-    (input: string | null | undefined) => {
-      vi.setSystemTime(new Date('2022-11-24'));
-      expect(getReleaseTag('', input)).toBe('22.11.1');
+  it.each(validTemplates)(
+    'should return reset itr for changed day for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2022-10-13'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-10-10'),
+        oldItr: 4,
+        newItr: template.includes(IAllowedTemplate.day) ? 1 : 5,
+        prefix: 'abc',
+      });
+      const actualTag = getNewReleaseTag('abc', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
     }
   );
+  it.each(validTemplates)(
+    'should return reset itr for changed month for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2022-10-12'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-01-12'),
+        oldItr: 1,
+        newItr: template.includes(IAllowedTemplate.month) ? 1 : 2,
+        prefix: 'v',
+      });
+      const actualTag = getNewReleaseTag('v', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-09-28'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-09-28'),
+        oldItr: 41,
+        newItr:
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear)
+            ? 1
+            : 42,
+        prefix: '10',
+      });
+      const actualTag = getNewReleaseTag('10', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed month/year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-04-18'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2022-11-18'),
+        oldItr: 166,
+        newItr:
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear) ||
+          template.includes(IAllowedTemplate.month)
+            ? 1
+            : 167,
+        prefix: '@',
+      });
+      const actualTag = getNewReleaseTag('@', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed date/month for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-06-15'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2023-03-25'),
+        oldItr: 5,
+        newItr:
+          template.includes(IAllowedTemplate.day) ||
+          template.includes(IAllowedTemplate.month)
+            ? 1
+            : 6,
+        prefix: '__',
+      });
+      const actualTag = getNewReleaseTag('__', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+  it.each(validTemplates)(
+    'should return reset itr for changed date/year for template: %s',
+    (template) => {
+      vi.setSystemTime(new Date('2023-12-11'));
+      const { oldTag, expectedTag } = getTestCase({
+        template,
+        oldDate: new Date('2021-12-17'),
+        oldItr: 12,
+        newItr:
+          template.includes(IAllowedTemplate.day) ||
+          template.includes(IAllowedTemplate.fullYear) ||
+          template.includes(IAllowedTemplate.shortYear)
+            ? 1
+            : 13,
+        prefix: '_v_',
+      });
+      const actualTag = getNewReleaseTag('_v_', template, oldTag);
+      expect(actualTag).toBe(expectedTag);
+    }
+  );
+});
 
-  it.each([['22.12.2'], ['20.05.14']])(
-    'should return version with reset iteration, current month and year',
-    (input: string | null | undefined) => {
-      vi.setSystemTime(new Date('2023-01-02'));
-      expect(getReleaseTag('', input)).toBe('23.1.1');
+describe('test invalid cases', () => {
+  it('should throw error for no template', () => {
+    expect(() => getNewReleaseTag('v', null, 'v2023.10.1')).toThrowError(
+      'Template not found'
+    );
+  });
+  it('should throw error for no old release tag', () => {
+    expect(() => getNewReleaseTag('v', 'yy.mm.i', null)).toThrowError(
+      'Old release tag not found'
+    );
+  });
+  it('should throw error when old release doesnt start with prefix', () => {
+    expect(() => getNewReleaseTag('v', 'yy.mm.i', '20.10.5')).toThrowError(
+      'Old release tag does not start with the tag prefix'
+    );
+  });
+  it.each(['yymmi', ...AllowedParts])(
+    'should throw error when no separator is in template',
+    (template) => {
+      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrowError(
+        'Template must have a separator'
+      );
+    }
+  );
+  it('should throw error when template has >1 separator in template', () => {
+    expect(() => getNewReleaseTag('', 'yy.mm-i', '20.10.5')).toThrowError(
+      'Template cannot have more than one separator'
+    );
+  });
+  it.each(['yymm.i', '-yy-mm-i', 'yy-mm-i-'])(
+    'should throw error when template: %s and release tag doesnt match',
+    (template) => {
+      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrowError(
+        'Template does not represent last release tag'
+      );
+    }
+  );
+  it.each(['2023.ab.1', 'h2.z.1#2', '123123.@.', 'false.true. hg '])(
+    'should throw error when template: %s and release tag doesnt match',
+    (oldTag) => {
+      expect(() => getNewReleaseTag('', 'yyyy.dd.i', oldTag)).toThrowError(
+        /Old relese tag contains unsupported character:/
+      );
     }
   );
 });

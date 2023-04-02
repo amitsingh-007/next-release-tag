@@ -1,28 +1,64 @@
-import { generateNewTagFromOld } from '../utils/release';
+import { IAllowedTemplate } from '../types';
+import { IPartsData } from '../types/template';
+import { parseTemplate } from './templateService';
 
-const getNewReleaseTag = (
-  tagPrefix: string,
-  oldReleaseTag: string | null | undefined
-) => {
-  if (oldReleaseTag && oldReleaseTag.startsWith(tagPrefix)) {
-    const [oldYear, oldMonth, oldItr] = oldReleaseTag
-      .substring(tagPrefix.length)
-      .split('.')
-      .map((x) => Number(x));
-    return generateNewTagFromOld({
-      oldYear,
-      oldMonth,
-      oldItr,
-      tagPrefix,
-    });
+const hasItemChanged = (old: number, cur: number) => old !== -1 && old !== cur;
+
+const getNewPartsData = (partsData: IPartsData) => {
+  const { oldFullYear, oldShortYear, oldMonth, oldDay, oldItr } = partsData;
+  const curDate = new Date();
+  const curFullYear = curDate.getFullYear();
+  const curShortYear = curFullYear % 100;
+  const curMonth = curDate.getMonth() + 1;
+  const curDay = curDate.getDate();
+  let newItr = oldItr + 1;
+  if (
+    hasItemChanged(oldFullYear, curFullYear) ||
+    hasItemChanged(oldShortYear, curShortYear) ||
+    hasItemChanged(oldMonth, curMonth) ||
+    hasItemChanged(oldDay, curDay)
+  ) {
+    newItr = 1;
   }
-  // Handle no releases yet or prefix not matching last release
-  return generateNewTagFromOld({
-    oldYear: -1,
-    oldMonth: -1,
-    oldItr: -1,
-    tagPrefix,
-  });
+  return {
+    curFullYear,
+    curShortYear,
+    curMonth,
+    curDay,
+    newItr,
+  };
 };
 
-export default getNewReleaseTag;
+const generateNewTagFromOld = (
+  partsData: IPartsData,
+  tagTemplate: string,
+  tagPrefix: string
+) => {
+  const { curFullYear, curShortYear, curMonth, curDay, newItr } =
+    getNewPartsData(partsData);
+  const newReleaseTag = tagTemplate
+    .replaceAll(IAllowedTemplate.fullYear, curFullYear.toString())
+    .replaceAll(IAllowedTemplate.shortYear, curShortYear.toString())
+    .replaceAll(IAllowedTemplate.month, curMonth.toString())
+    .replaceAll(IAllowedTemplate.day, curDay.toString())
+    .replaceAll(IAllowedTemplate.itr, newItr.toString());
+  return `${tagPrefix}${newReleaseTag}`;
+};
+
+export const getNewReleaseTag = (
+  tagPrefix: string,
+  tagTemplate: string | null | undefined,
+  oldReleaseTag: string | null | undefined
+) => {
+  if (!tagTemplate) {
+    throw new Error('Template not found');
+  }
+  if (!oldReleaseTag) {
+    throw new Error('Old release tag not found');
+  }
+  if (!oldReleaseTag.startsWith(tagPrefix)) {
+    throw new Error('Old release tag does not start with the tag prefix');
+  }
+  const oldPartsData = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
+  return generateNewTagFromOld(oldPartsData, tagTemplate, tagPrefix);
+};
