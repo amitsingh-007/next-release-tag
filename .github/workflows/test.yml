@@ -2,7 +2,7 @@ name: Test
 on:
   push:
     branches-ignore:
-      - 'master'
+      - 'main'
 
 jobs:
   Test:
@@ -34,7 +34,9 @@ jobs:
         id: generate_release_tag
         uses: ./
         with:
+          tag_prefix: 'v'
+          tag_template: 'yy.mm.i'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Manually check release tag
-        run: echo "${{ steps.generate_release_tag.outputs.release_tag }}"
+        run: echo "${{ steps.generate_release_tag.outputs.next_release_tag }}"

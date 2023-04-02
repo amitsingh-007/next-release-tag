@@ -11,8 +11,10 @@ inputs:
     required: true
   tag_prefix:
     description: 'Prefix added to the generated release tag'
-    required: false
-    default: 'v'
+    required: true
+  tag_template:
+    description: 'Template format based in which release tag is generated'
+    required: true
 
 runs:
   using: 'node16'
