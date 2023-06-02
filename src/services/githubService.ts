@@ -15,7 +15,7 @@ export const fetchLatestReleaseTag = async () => {
     });
     return response.data?.at(0)?.name;
   } catch (e) {
-    console.error('Error while fetching tags list for this repository');
+    console.error('Error while fetching tags list for this repository', e);
     throw e;
   }
 };
