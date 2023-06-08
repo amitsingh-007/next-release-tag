@@ -4,7 +4,7 @@
 - The action sets an output variable named `next_release_tag`, which can be used to create the next release.
 - It uses the previous release tag and increments it based on the year, month, date, and iteration count.
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
-- To use this action, there must be a release tag in the repository, and the latest release tag must follow the given template.
+- To use this action, there must be a release tag in the repository, and the latest tag must follow the given template. The latest tag can be a pre-release, draft, full release or dangling tag.
 - This action is recommended to be used with `actions/create-release` to create the release.
 - The minimum supported Node.js version is v14.
 
