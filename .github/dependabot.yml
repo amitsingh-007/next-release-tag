@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    open-pull-requests-limit: 100
+    target-branch: 'dependabot-updates'
+    labels: []
+    schedule:
+      interval: 'monthly'
+
+  # Maintain dependencies for pnpm
+  - package-ecosystem: 'pnpm'
+    directory: '/'
+    open-pull-requests-limit: 100
+    target-branch: 'dependabot-updates'
+    labels: []
+    schedule:
+      interval: 'monthly'
