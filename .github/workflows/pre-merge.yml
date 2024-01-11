@@ -2,6 +2,9 @@ name: Pre Merge
 
 on:
   workflow_dispatch:
+    branches-ignore:
+      - 'dependabot/**'
+
     inputs:
       expected_release_tag:
         description: Expected release tag
