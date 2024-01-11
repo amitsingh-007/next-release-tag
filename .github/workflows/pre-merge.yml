@@ -50,7 +50,7 @@ jobs:
             core.setFailed('Actual and expected output doesnt match')
 
       - name: Add status check
-        uses: LouisBrunner/checks-action@v1.5.0
+        uses: LouisBrunner/checks-action@v1.6.2
         if: always()
         with:
           sha: ${{ github.sha }}
