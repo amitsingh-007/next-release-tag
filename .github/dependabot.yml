@@ -10,7 +10,7 @@ updates:
       interval: 'monthly'
 
   # Maintain dependencies for pnpm
-  - package-ecosystem: 'pnpm'
+  - package-ecosystem: 'npm'
     directory: '/'
     open-pull-requests-limit: 100
     target-branch: 'dependabot-updates'
