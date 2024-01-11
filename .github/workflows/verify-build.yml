@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - 'main'
+      - 'dependabot/**'
 
 jobs:
   Verify:
