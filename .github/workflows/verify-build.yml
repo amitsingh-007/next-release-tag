@@ -1,6 +1,7 @@
 name: Verify build
 on:
   pull_request:
+    types: [opened, reopened]
     branches-ignore:
       - 'dependabot-updates'
   push:
