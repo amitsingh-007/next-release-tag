@@ -1,5 +1,9 @@
 name: Verify build
 on:
+  pull_request:
+    branches-ignore:
+      - 'main'
+      - 'dependabot/**'
   push:
     branches-ignore:
       - 'main'
