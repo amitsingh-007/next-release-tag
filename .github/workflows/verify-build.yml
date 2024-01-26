@@ -1,6 +1,7 @@
 name: Verify build
 on:
   pull_request:
+    types: [opened, reopened]
     branches-ignore:
       - 'dependabot-updates'
   push:
@@ -23,7 +24,7 @@ jobs:
       - name: Setting up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies

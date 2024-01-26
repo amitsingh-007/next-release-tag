@@ -6,7 +6,7 @@
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
 - To use this action, there must be a release tag in the repository, and the latest tag must follow the given template. The latest tag can be a pre-release, a full release or a dangling tag.
 - This action is recommended to be used with `actions/create-release` to create the release.
-- The minimum supported Node.js version is v14.
+- The minimum supported Node.js version is v20.
 
 ## Inputs
 
