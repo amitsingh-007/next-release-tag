@@ -49,7 +49,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
           generateReleaseNotes: true
           makeLatest: true
 ```
