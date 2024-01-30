@@ -6,7 +6,7 @@
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
 - To use this action, there must be a release tag in the repository, and the latest tag must follow the given template. The latest tag can be a pre-release, a full release or a dangling tag.
 - This action is recommended to be used with `actions/create-release` to create the release.
-- The minimum supported Node.js version is v14.
+- The minimum supported Node.js version is v20.
 
 ## Inputs
 
@@ -35,23 +35,22 @@ jobs:
 
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Generate release tag
         id: generate_release_tag
-        uses: amitsingh-007/next-release-tag@v4.0.0
+        uses: amitsingh-007/next-release-tag@v5.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: 'v'
           tag_template: 'yyyy.mm.dd.i'
 
       - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          release_name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          generateReleaseNotes: true
+          makeLatest: true
 ```
 
 ## Templating System
