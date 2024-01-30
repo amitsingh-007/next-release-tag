@@ -57,7 +57,9 @@ export const getNewReleaseTag = (
     throw new Error('Old release tag not found');
   }
   if (!oldReleaseTag.startsWith(tagPrefix)) {
-    throw new Error(`Old release tag "${oldReleaseTag}" does not start with the tag prefix "${tagPrefix}"`);
+    throw new Error(
+      `Old release tag "${oldReleaseTag}" does not start with the tag prefix "${tagPrefix}"`
+    );
   }
   const oldPartsData = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
   return generateNewTagFromOld(oldPartsData, tagTemplate, tagPrefix);
