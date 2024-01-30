@@ -269,7 +269,7 @@ describe('test invalid cases', () => {
   });
   it('should throw error when old release doesnt start with prefix', () => {
     expect(() => getNewReleaseTag('v', 'yy.mm.i', '20.10.5')).toThrowError(
-      'Old release tag does not start with the tag prefix'
+      'Old release tag "20.10.5" does not start with the tag prefix "v"'
     );
   });
   it.each(['yymmi', ...AllowedParts])(
