@@ -14,6 +14,11 @@ afterEach(() => {
 });
 
 describe('test valid cases without prefix', () => {
+  it('should return tag when no old release tag exists', () => {
+    vi.setSystemTime(new Date('2022-10-13'));
+    const actualTag = getNewReleaseTag('', 'yy.mm.dd.i', null);
+    expect(actualTag).toBe('22.10.13.1');
+  });
   it.each(validTemplates)(
     'should return changed itr for same date for template: %s',
     (template) => {
@@ -132,6 +137,11 @@ describe('test valid cases without prefix', () => {
 });
 
 describe('test valid cases with prefix', () => {
+  it('should return tag when no old release tag exists', () => {
+    vi.setSystemTime(new Date('2022-10-13'));
+    const actualTag = getNewReleaseTag('v', 'yy.mm.dd.i', null);
+    expect(actualTag).toBe('v22.10.13.1');
+  });
   it.each(validTemplates)(
     'should return changed itr for same date for template: %s',
     (template) => {
@@ -262,14 +272,9 @@ describe('test invalid cases', () => {
       'Template not found'
     );
   });
-  it('should throw error for no old release tag', () => {
-    expect(() => getNewReleaseTag('v', 'yy.mm.i', null)).toThrowError(
-      'Old release tag not found'
-    );
-  });
   it('should throw error when old release doesnt start with prefix', () => {
     expect(() => getNewReleaseTag('v', 'yy.mm.i', '20.10.5')).toThrowError(
-      'Old release tag does not start with the tag prefix'
+      'Old release tag "20.10.5" does not start with the tag prefix "v"'
     );
   });
   it.each(['yymmi', ...AllowedParts])(

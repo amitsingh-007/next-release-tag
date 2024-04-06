@@ -18,14 +18,10 @@ const getSeparator = (template: string) => {
 
 const parse = (
   template: string,
-  oldTag: string,
-  separator: string
+  oldReleaseTag: string | null | undefined,
+  separator: string,
+  tagPrefix: string
 ): IPartsData => {
-  const templateParts = template.split(separator);
-  const oldTagParts = oldTag.split(separator);
-  if (templateParts.length !== oldTagParts.length) {
-    throw new Error('Template does not represent last release tag');
-  }
   const partsData = {
     separator,
     oldFullYear: -1,
@@ -34,7 +30,24 @@ const parse = (
     oldDay: -1,
     oldItr: -1,
   };
-  templateParts.forEach((x, index) => {
+  if (!oldReleaseTag) {
+    partsData.oldItr = 0;
+    return partsData;
+  }
+  if (!oldReleaseTag.startsWith(tagPrefix)) {
+    throw new Error(
+      `Old release tag "${oldReleaseTag}" does not start with the tag prefix "${tagPrefix}"`
+    );
+  }
+
+  const oldTag = oldReleaseTag.substring(tagPrefix.length);
+  const templateParts = template.split(separator);
+  const oldTagParts = oldTag.split(separator);
+  if (templateParts.length !== oldTagParts.length) {
+    throw new Error('Template does not represent last release tag');
+  }
+
+  templateParts.forEach((part, index) => {
     const oldTagPartStr = oldTagParts[index];
     if (!oldTagPartStr || Number.isNaN(parseInt(oldTagPartStr, 10))) {
       throw new Error(
@@ -42,7 +55,7 @@ const parse = (
       );
     }
     const oldTagPart = Number(oldTagPartStr);
-    switch (x) {
+    switch (part) {
       case IAllowedTemplate.fullYear:
         partsData.oldFullYear = oldTagPart;
         break;
@@ -59,7 +72,7 @@ const parse = (
         partsData.oldItr = oldTagPart;
         break;
       default:
-        throw new Error(`Template contains unrecognized character: ${x}`);
+        throw new Error(`Template contains unrecognized character: ${part}`);
     }
   });
   return partsData;
@@ -67,9 +80,9 @@ const parse = (
 
 export const parseTemplate = (
   template: string,
-  oldTag: string,
+  oldTag: string | null | undefined,
   tagPrefix: string
 ) => {
   const separator = getSeparator(template);
-  return parse(template, oldTag.substring(tagPrefix.length), separator);
+  return parse(template, oldTag, separator, tagPrefix);
 };
