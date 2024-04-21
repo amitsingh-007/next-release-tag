@@ -13,6 +13,7 @@ export const fetchLatestReleaseTag = async () => {
       page: 1,
       per_page: 1,
     });
+    console.debug('Repository release data', response);
     return response.data?.at(0)?.name;
   } catch (e) {
     console.error('Error while fetching tags list for this repository', e);
