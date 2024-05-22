@@ -15,6 +15,10 @@ inputs:
   tag_template:
     description: 'Template format based in which release tag is generated'
     required: true
+  previous_tag:
+    description: 'Explicitly set the previous release tag'
+    required: false
+
 
 runs:
   using: 'node20'
