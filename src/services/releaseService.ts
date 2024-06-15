@@ -1,5 +1,6 @@
 import { IAllowedTemplate } from '../types';
 import { IPartsData } from '../types/template';
+import TagBuilder from './tagBuilder';
 import { parseTemplate } from './templateService';
 
 const hasItemChanged = (old: number, cur: number) => old !== -1 && old !== cur;
@@ -29,22 +30,6 @@ const getNewPartsData = (partsData: IPartsData) => {
   };
 };
 
-const generateNewTagFromOld = (
-  partsData: IPartsData,
-  tagTemplate: string,
-  tagPrefix: string
-) => {
-  const { curFullYear, curShortYear, curMonth, curDay, newItr } =
-    getNewPartsData(partsData);
-  const newReleaseTag = tagTemplate
-    .replaceAll(IAllowedTemplate.fullYear, curFullYear.toString())
-    .replaceAll(IAllowedTemplate.shortYear, curShortYear.toString())
-    .replaceAll(IAllowedTemplate.month, curMonth.toString())
-    .replaceAll(IAllowedTemplate.day, curDay.toString())
-    .replaceAll(IAllowedTemplate.itr, newItr.toString());
-  return `${tagPrefix}${newReleaseTag}`;
-};
-
 export const getNewReleaseTag = (
   tagPrefix: string,
   tagTemplate: string | null | undefined,
@@ -54,5 +39,15 @@ export const getNewReleaseTag = (
     throw new Error('Template not found');
   }
   const oldPartsData = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
-  return generateNewTagFromOld(oldPartsData, tagTemplate, tagPrefix);
+  const { curFullYear, curShortYear, curMonth, curDay, newItr } =
+    getNewPartsData(oldPartsData);
+
+  return new TagBuilder(tagTemplate)
+    .inject(IAllowedTemplate.fullYear, curFullYear)
+    .inject(IAllowedTemplate.shortYear, curShortYear)
+    .inject(IAllowedTemplate.month, curMonth)
+    .inject(IAllowedTemplate.day, curDay)
+    .inject(IAllowedTemplate.itr, newItr)
+    .addPrefix(tagPrefix)
+    .build();
 };
