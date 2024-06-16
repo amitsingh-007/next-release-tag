@@ -17,7 +17,7 @@ describe('test valid cases without prefix', () => {
   it('should return tag when no old release tag exists', () => {
     vi.setSystemTime(new Date('2022-10-13'));
     const actualTag = getNewReleaseTag('', 'yy.mm.dd.i', null);
-    expect(actualTag).toBe('22.10.13.1');
+    expect(actualTag).toBe('22.10.13.01');
   });
   it.each(validTemplates)(
     'should return changed itr for same date for template: %s',
@@ -140,7 +140,7 @@ describe('test valid cases with prefix', () => {
   it('should return tag when no old release tag exists', () => {
     vi.setSystemTime(new Date('2022-10-13'));
     const actualTag = getNewReleaseTag('v', 'yy.mm.dd.i', null);
-    expect(actualTag).toBe('v22.10.13.1');
+    expect(actualTag).toBe('v22.10.13.01');
   });
   it.each(validTemplates)(
     'should return changed itr for same date for template: %s',
