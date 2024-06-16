@@ -19,7 +19,6 @@ inputs:
     description: 'Explicitly set the previous release tag'
     required: false
 
-
 runs:
   using: 'node20'
   main: 'dist/index.js'

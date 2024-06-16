@@ -4,7 +4,7 @@
 - The action sets an output variable named `next_release_tag`, which can be used to create the next release.
 - It uses the previous release tag and increments it based on the year, month, date, and iteration count.
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
-- This action is recommended to be used with `actions/create-release` to create the release.
+- This action is recommended to be used with `softprops/action-gh-release` or `ncipollo/release-action` to create the release.
 - The minimum supported Node.js version is v20.
 
 ## Inputs
@@ -47,11 +47,12 @@ jobs:
           tag_template: 'yyyy.mm.dd.i'
 
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          generateReleaseNotes: true
-          makeLatest: true
+          name: Release ${{ steps.release_tag.outputs.next_release_tag }}
+          tag_name: ${{ steps.release_tag.outputs.next_release_tag }}
+          token: ${{secrets.GITHUB_TOKEN}}
+          generate_release_notes: true
 ```
 
 ## Templating System
