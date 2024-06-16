@@ -15,6 +15,8 @@
 
 `tag_template`: A preconfigured static template based on which the new release tag will be generated. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information. This is a required input.
 
+`previous_tag`: Pass this to override previous tag value and not fetch previous release tag. This is an optional input.
+
 ## Outputs
 
 `next_release_tag`: This output variable contains the next release version and is set by the action. You can access it via `step.<id>.outputs.next_release_tag`.
@@ -38,7 +40,7 @@ jobs:
 
       - name: Generate release tag
         id: generate_release_tag
-        uses: amitsingh-007/next-release-tag@v5.0.0
+        uses: amitsingh-007/next-release-tag@v6.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: 'v'
@@ -62,5 +64,5 @@ This action supports a flexible templating system with a few constraints. Users 
 - Separators cannot be at the beginning or end of the template (e.g., `.yy.mm.i.` is not allowed).
 - A separator can be any string, but it cannot contain the above-mentioned tokens.
 - Only a single kind of separator is allowed in the string (e.g., `yy-mm-dd.i` is not allowed).
-- The iteration count resets to `1` when the year, month, or date is changed between the last release and the current release.
-- The final generated release tag will be in the format: `<tag_prefix><filled-in tag_template>` (e.g., if the tag_prefix is `v` and the tag_template is `yyyy.mm.dd.i`, then the second release on March 21, 2023, will be `v2023.3.21.2`).
+- The iteration count resets to `01` when any of the year, month, or date is changed between the last release and the current release.
+- The final generated release tag will be in the format: `<tag_prefix><filled-in tag_template>` (e.g., if the tag_prefix is `v` and the tag_template is `yyyy.mm.dd.i`, then the second release on June 21, 2024, will be `v2024.06.21.02`).
