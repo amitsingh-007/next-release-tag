@@ -9,7 +9,7 @@ const generateNextReleaseTag = async (): Promise<void> => {
     const previousTagOverride = getInput('previous_tag');
 
     const oldReleaseTag =
-      previousTagOverride ?? (await fetchLatestReleaseTag());
+      previousTagOverride || (await fetchLatestReleaseTag());
     const newReleaseTag = getNewReleaseTag(
       tagPrefix,
       tagTemplate,
