@@ -49,8 +49,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ steps.release_tag.outputs.next_release_tag }}
-          tag_name: ${{ steps.release_tag.outputs.next_release_tag }}
+          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
           token: ${{secrets.GITHUB_TOKEN}}
           generate_release_notes: true
 ```
