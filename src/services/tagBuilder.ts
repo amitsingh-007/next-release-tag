@@ -1,13 +1,13 @@
 class TagBuilder {
+  private static format(value: number) {
+    return value < 10 ? `0${value}` : `${value}`;
+  }
+
   private tagTemplate: string;
   private prefix: string | undefined;
 
   constructor(tagTemplate: string) {
     this.tagTemplate = `${tagTemplate}`; // Deep copy
-  }
-
-  private static format(value: number) {
-    return value < 10 ? `0${value}` : `${value}`;
   }
 
   public inject(templatePart: string, value: number) {
@@ -27,6 +27,7 @@ class TagBuilder {
     if (!this.prefix) {
       return this.tagTemplate;
     }
+
     return `${this.prefix}${this.tagTemplate}`;
   }
 }

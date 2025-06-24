@@ -5,7 +5,7 @@ const permuteRec = ({
   curRes,
   index,
 }: {
-  arr: any[];
+  arr: string[];
   res: Set<string>;
   curRes: string[];
   map: boolean[];
@@ -15,8 +15,10 @@ const permuteRec = ({
     if (curRes.length > 1) {
       res.add(curRes.join('.'));
     }
+
     return res;
   }
+
   arr.forEach((p, i) => {
     if (!map[i]) {
       res = permuteRec({ res, curRes, map, index: index + 1, arr });
@@ -30,13 +32,14 @@ const permuteRec = ({
   return res;
 };
 
-export const permute = (arr: any[]) =>
-  Array.from(
-    permuteRec({
-      arr,
-      curRes: [],
-      map: new Array(arr.length).fill(false),
-      res: new Set<string>(),
-      index: 0,
-    })
-  );
+export const permute = (arr: string[]) => {
+  const permutationSet = permuteRec({
+    arr,
+    curRes: [],
+    map: Array.from<boolean>({ length: arr.length }).fill(false),
+    res: new Set<string>(),
+    index: 0,
+  });
+
+  return [...permutationSet];
+};

@@ -26,4 +26,4 @@ const generateNextReleaseTag = async (): Promise<void> => {
   }
 };
 
-generateNextReleaseTag();
+void generateNextReleaseTag();
