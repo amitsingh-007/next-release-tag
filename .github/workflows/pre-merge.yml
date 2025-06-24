@@ -15,6 +15,12 @@ jobs:
   Pre_Merge:
     runs-on: ubuntu-latest
     steps:
+      - name: Add pending status check
+        uses: myrotvorets/set-commit-status-action@v2.0.1
+        with:
+          status: pending
+          sha: ${{ github.sha }}
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -52,11 +58,9 @@ jobs:
           script: |
             core.setFailed('Actual and expected output doesnt match')
 
-      - name: Add status check
-        uses: LouisBrunner/checks-action@v2.0.0
+      - name: Set final status check
+        uses: myrotvorets/set-commit-status-action@v2.0.1
         if: always()
         with:
+          status: ${{ job.status }}
           sha: ${{ github.sha }}
-          token: ${{ github.token }}
-          name: Pre Merge Check
-          conclusion: ${{ job.status }}

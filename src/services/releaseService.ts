@@ -1,5 +1,5 @@
 import { IAllowedTemplate } from '../types';
-import { IPartsData } from '../types/template';
+import { type IPartsData } from '../types/template';
 import TagBuilder from './tagBuilder';
 import { parseTemplate } from './templateService';
 
@@ -21,6 +21,7 @@ const getNewPartsData = (partsData: IPartsData) => {
   ) {
     newItr = 1;
   }
+
   return {
     curFullYear,
     curShortYear,
@@ -38,6 +39,7 @@ export const getNewReleaseTag = (
   if (!tagTemplate) {
     throw new Error('Template not found');
   }
+
   const oldPartsData = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
   const { curFullYear, curShortYear, curMonth, curDay, newItr } =
     getNewPartsData(oldPartsData);
