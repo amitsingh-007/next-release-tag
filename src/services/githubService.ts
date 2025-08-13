@@ -19,3 +19,20 @@ export const fetchLatestReleaseTag = async () => {
     throw error;
   }
 };
+
+export const fetchLatestMatchingTag = async (pattern: string) => {
+  const githubToken = getInput('github_token', { required: true });
+  const octokit = getOctokit(githubToken);
+  const { owner, repo } = context.repo;
+
+  // This API fetches all matching tags. it doesnt support pagination
+  const response = await octokit.rest.git.listMatchingRefs({
+    owner,
+    repo,
+    ref: `tags/${pattern}`,
+  });
+
+  const latestTagRef = response?.data?.at(-1)?.ref;
+  const latestTag = latestTagRef?.split('/')?.pop();
+  return latestTag;
+};
