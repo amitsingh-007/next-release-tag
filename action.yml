@@ -10,7 +10,7 @@ inputs:
     description: 'Github secrets token'
     required: true
   tag_prefix:
-    description: 'Prefix added to the generated release tag'
+    description: 'Prefix added to the generated release tag; supports * wildcard only at the end for prefix matching'
     required: true
   tag_template:
     description: 'Template format based in which release tag is generated'
