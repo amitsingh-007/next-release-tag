@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-warning-comments
-// TODO: write tests
 export const extractTagPrefix = (tagPrefix: string) => {
   const wildcardCount = tagPrefix.match(/\*/g)?.length;
   // If no wildcard is present, return the tagPrefix as is
