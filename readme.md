@@ -64,7 +64,7 @@ This action supports a tag prefix which can be wildcard as well and is prepended
 
 - You cannot pass a value containing tag templates. These are reserved characters. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information.
 - Pass `''` to create the release tag without any prefix.
-Pass any string. This will fetch the latest tag and prepend the specified prefix.
+- Pass any string. This will fetch the latest tag and prepend the specified prefix.
 - Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`).
 
 ### Tag template
