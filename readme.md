@@ -4,6 +4,7 @@
 - The action sets an output variable named `next_release_tag`, which can be used to create the next release.
 - It uses the previous release tag and increments it based on the year, month, date, and iteration count.
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
+- Supports prefix wildcard tag prefixes (e.g., `v*`) to automatically use the latest tag starting with the prefix. Only prefix-based wildcard matching is supported.
 - This action is recommended to be used with `softprops/action-gh-release` or `ncipollo/release-action` to create the release.
 - The minimum supported Node.js version is v20.
 
@@ -11,11 +12,11 @@
 
 `github_token`: The Github Secret `GITHUB_TOKEN` or `Personal Access Token`. This is a required input.
 
-`tag_prefix`: The prefix to be added to the generated release tag. Pass as `''` to remove prefix in the generated output. This is a required input.
+`tag_prefix`: The prefix to be added to the generated release tag. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-prefix) for more information.
 
-`tag_template`: A preconfigured static template based on which the new release tag will be generated. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information. This is a required input.
+`tag_template`: A preconfigured static template based on which the new release tag will be generated. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information. This is a required input.
 
-`previous_tag`: Pass this to override previous tag value and not fetch previous release tag. This is an optional input.
+`previous_tag`: Pass this to override the automatically detected previous tag instead of fetching it. This is an optional input.
 
 ## Outputs
 
@@ -56,6 +57,17 @@ jobs:
 ```
 
 ## Templating System
+
+### Tag prefix
+
+This action supports a tag prefix which can be wildcard as well and is prepended to the final release tag. This prefix is also used to fetch the last release based on which new release tag is created. It supports following values:
+
+- You cannot pass a value containing tag templates. These are reserved characters. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information.
+- Pass `''` to create the release tag without any prefix.
+- Pass any string. This will fetch the latest tag and prepend the specified prefix.
+- Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`).
+
+### Tag template
 
 This action supports a flexible templating system with a few constraints. Users must pass the `tag_template` option in the action, and the action will fill in the corresponding values based on the template to generate a new release tag. The following are the rules and constraints:
 
