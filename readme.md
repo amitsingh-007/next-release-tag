@@ -12,7 +12,7 @@
 
 `github_token`: The Github Secret `GITHUB_TOKEN` or `Personal Access Token`. This is a required input.
 
-`tag_prefix`: The prefix to be added to the generated release tag. Pass `''` to remove it. Append a `*` to fetch the latest tag with the same prefix (e.g., `v*`). Only a single wildcard is supported, and it must be at the end of the prefix. This is a required input.
+`tag_prefix`: The prefix to be added to the generated release tag. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
 
 `tag_template`: A preconfigured static template based on which the new release tag will be generated. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information. This is a required input.
 
@@ -57,6 +57,17 @@ jobs:
 ```
 
 ## Templating System
+
+### Tag prefix
+
+This action supports a tag prefix which can be wildcard as well and is prepended to the final release tag. This prefix is also used to fetch the last release based on which new release tag is created. It supports following values:
+
+- You cannot pass value containing tag templates. Those are reserved characters. Check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
+- Pass `''` to create the release tag without any prefix.
+Pass any string. This will fetch the latest tag and prepend the specified prefix.
+- Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`).
+
+### Tag template
 
 This action supports a flexible templating system with a few constraints. Users must pass the `tag_template` option in the action, and the action will fill in the corresponding values based on the template to generate a new release tag. The following are the rules and constraints:
 
