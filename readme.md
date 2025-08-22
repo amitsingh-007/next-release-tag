@@ -12,9 +12,9 @@
 
 `github_token`: The Github Secret `GITHUB_TOKEN` or `Personal Access Token`. This is a required input.
 
-`tag_prefix`: The prefix to be added to the generated release tag. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
+`tag_prefix`: The prefix to be added to the generated release tag. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-prefix) for more information.
 
-`tag_template`: A preconfigured static template based on which the new release tag will be generated. Please check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information. This is a required input.
+`tag_template`: A preconfigured static template based on which the new release tag will be generated. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information. This is a required input.
 
 `previous_tag`: Pass this to override the automatically detected previous tag instead of fetching it. This is an optional input.
 
@@ -62,7 +62,7 @@ jobs:
 
 This action supports a tag prefix which can be wildcard as well and is prepended to the final release tag. This prefix is also used to fetch the last release based on which new release tag is created. It supports following values:
 
-- You cannot pass value containing tag templates. Those are reserved characters. Check the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
+- You cannot pass a value containing tag templates. These are reserved characters. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information.
 - Pass `''` to create the release tag without any prefix.
 Pass any string. This will fetch the latest tag and prepend the specified prefix.
 - Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`).
