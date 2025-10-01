@@ -22,7 +22,7 @@
   "devDependencies": {
     "@vercel/ncc": "0.38.3",
     "husky": "9.1.7",
-    "tsx": "4.20.4",
+    "tsx": "4.20.6",
     "typescript": "5.9.2",
     "vitest": "3.2.4",
     "xo": "1.2.2"
