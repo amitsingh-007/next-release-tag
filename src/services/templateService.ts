@@ -54,7 +54,7 @@ const parse = (
     const oldTagPartStr = oldTagParts[index];
     if (!oldTagPartStr || Number.isNaN(Number.parseInt(oldTagPartStr, 10))) {
       throw new Error(
-        `Old relese tag contains unsupported character: ${oldTagPartStr}`
+        `Old release tag contains unsupported character: ${oldTagPartStr}`
       );
     }
 

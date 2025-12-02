@@ -37,11 +37,11 @@ jobs:
 
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Generate release tag
         id: generate_release_tag
-        uses: amitsingh-007/next-release-tag@v6.0.0
+        uses: amitsingh-007/next-release-tag@v6.3.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: 'v'
