@@ -25,7 +25,7 @@ export const fetchLatestMatchingTag = async (pattern: string) => {
   const octokit = getOctokit(githubToken);
   const { owner, repo } = context.repo;
 
-  // This API fetches all matching tags. it doesnt support pagination
+  // This API fetches all matching tags. it doesn't support pagination
   const response = await octokit.rest.git.listMatchingRefs({
     owner,
     repo,

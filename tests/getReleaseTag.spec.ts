@@ -302,7 +302,7 @@ describe('test invalid cases', () => {
     'should throw error when template: %s and release tag doesnt match',
     (oldTag) => {
       expect(() => getNewReleaseTag('', 'yyyy.dd.i', oldTag)).toThrowError(
-        /Old relese tag contains unsupported character:/
+        /Old release tag contains unsupported character:/
       );
     }
   );
