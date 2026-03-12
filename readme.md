@@ -6,7 +6,7 @@
 - The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
 - Supports prefix wildcard tag prefixes (e.g., `v*`) to automatically use the latest tag starting with the prefix. Only prefix-based wildcard matching is supported.
 - This action is recommended to be used with `softprops/action-gh-release` or `ncipollo/release-action` to create the release.
-- The minimum supported Node.js version is v20.
+- This action runs on GitHub Actions Node.js 24 runtime. The Node.js version used by your own project steps is independent.
 
 ## Inputs
 
