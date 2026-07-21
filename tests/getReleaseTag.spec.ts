@@ -268,32 +268,32 @@ describe('test valid cases with prefix', () => {
 
 describe('test invalid cases', () => {
   it('should throw error for no template', () => {
-    expect(() => getNewReleaseTag('v', null, 'v2023.10.1')).toThrowError(
+    expect(() => getNewReleaseTag('v', null, 'v2023.10.1')).toThrow(
       'Template not found'
     );
   });
   it('should throw error when old release doesnt start with prefix', () => {
-    expect(() => getNewReleaseTag('v', 'yy.mm.i', '20.10.5')).toThrowError(
+    expect(() => getNewReleaseTag('v', 'yy.mm.i', '20.10.5')).toThrow(
       'Old release tag "20.10.5" does not start with the tag prefix "v"'
     );
   });
   it.each(['yymmi', ...AllowedParts])(
     'should throw error when no separator is in template',
     (template) => {
-      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrowError(
+      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrow(
         'Template must have a separator'
       );
     }
   );
   it('should throw error when template has >1 separator in template', () => {
-    expect(() => getNewReleaseTag('', 'yy.mm-i', '20.10.5')).toThrowError(
+    expect(() => getNewReleaseTag('', 'yy.mm-i', '20.10.5')).toThrow(
       'Template cannot have more than one separator'
     );
   });
   it.each(['yymm.i', '-yy-mm-i', 'yy-mm-i-'])(
     'should throw error when template: %s and release tag doesnt match',
     (template) => {
-      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrowError(
+      expect(() => getNewReleaseTag('', template, '20.10.5')).toThrow(
         'Template does not represent last release tag'
       );
     }
@@ -301,7 +301,7 @@ describe('test invalid cases', () => {
   it.each(['2023.ab.1', 'h2.z.1#2', '123123.@.', 'false.true. hg '])(
     'should throw error when template: %s and release tag doesnt match',
     (oldTag) => {
-      expect(() => getNewReleaseTag('', 'yyyy.dd.i', oldTag)).toThrowError(
+      expect(() => getNewReleaseTag('', 'yyyy.dd.i', oldTag)).toThrow(
         /Old release tag contains unsupported character:/
       );
     }

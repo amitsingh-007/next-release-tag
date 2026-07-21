@@ -22,17 +22,19 @@ jobs:
           sha: ${{ github.sha }}
 
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       - name: Setting up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -53,7 +55,7 @@ jobs:
 
       - name: Fail if mismatch
         if: ${{ inputs.expected_release_tag != steps.generate_release_tag.outputs.next_release_tag }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             core.setFailed('Actual and expected output doesnt match')
