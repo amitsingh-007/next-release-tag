@@ -307,3 +307,39 @@ describe('test invalid cases', () => {
     }
   );
 });
+
+describe('test edge cases', () => {
+  it('renders short year as 00 on the 2100 wraparound (first release)', () => {
+    vi.setSystemTime(new Date('2100-01-01'));
+    expect(getNewReleaseTag('', 'yy.mm.dd.i', null)).toBe('00.01.01.01');
+  });
+
+  it('resets iteration when the short year wraps to 00', () => {
+    vi.setSystemTime(new Date('2100-03-05'));
+    expect(getNewReleaseTag('', 'yy.mm.dd.i', '99.03.05.07')).toBe(
+      '00.03.05.01'
+    );
+  });
+
+  it('increments a large iteration without padding when the date is unchanged', () => {
+    vi.setSystemTime(new Date('2026-07-21'));
+    // Yy/mm match the current date, so itr increments instead of resetting.
+    expect(getNewReleaseTag('', 'yy.mm.i', '26.07.200')).toBe('26.07.201');
+  });
+
+  it('resets a large iteration when a date token changes (reset trap)', () => {
+    vi.setSystemTime(new Date('2026-07-21'));
+    // Year and month differ, so the large itr resets to 01 rather than incrementing.
+    expect(getNewReleaseTag('', 'yy.mm.i', '25.10.200')).toBe('26.07.01');
+  });
+
+  it('preserves a multi-character separator for a first release', () => {
+    vi.setSystemTime(new Date('2026-07-21'));
+    expect(getNewReleaseTag('', 'yy--mm--i', null)).toBe('26--07--01');
+  });
+
+  it('injects a repeated token into every position', () => {
+    vi.setSystemTime(new Date('2026-07-21'));
+    expect(getNewReleaseTag('', 'yy.yy.i', '26.26.05')).toBe('26.26.06');
+  });
+});
