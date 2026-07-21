@@ -1,0 +1,5 @@
+overrides:
+  postcss: 8.5.20
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
