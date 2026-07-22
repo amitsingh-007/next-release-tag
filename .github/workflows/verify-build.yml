@@ -9,6 +9,9 @@ on:
       - 'main'
       - 'dependabot/**'
 
+permissions:
+  contents: read
+
 jobs:
   Verify:
     runs-on: ubuntu-latest
@@ -30,17 +33,24 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: Generating dist/
+      - name: Check formatting
+        run: pnpm format:check
+
+      # lint + typecheck + test + build the committed dist/ bundle.
+      - name: Lint, typecheck, test and build
         run: pnpm dist
 
+      # Fail if the committed dist/ is missing, untracked, or out of sync with src/.
+      # `git status --porcelain` (unlike `git diff`) also catches untracked/absent files.
       - name: Compare the expected and actual dist/ directories
         id: diff
         run: |
-          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
-            echo "Detected uncommitted changes after build.  See status below:"
-            git diff
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            echo "dist/ is out of sync or not committed. Run 'pnpm build' and commit dist/. Status:"
+            git status --porcelain dist/
+            git diff --ignore-space-at-eol dist/
             exit 1
           fi
 
