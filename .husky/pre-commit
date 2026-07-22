@@ -1,3 +1,0 @@
-pnpm dist
-# Commit updated dist
-git add dist/\*

@@ -1,0 +1,47 @@
+name: Move major tag
+
+# When a release like v6.5.0 is published, move the floating major tag (v6) to the
+# released commit so consumers pinning `@v6` always get the latest v6.x.
+# (Same approach actions/checkout uses; dist/ is committed, so the release commit
+# already carries a runnable bundle.)
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  Move_Major_Tag:
+    # Never move the major tag to a pre-release (e.g. v6.0.0-rc.1).
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Move major tag
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          # Only handle vN.N.N-style tags; skip anything else.
+          if ! printf '%s' "$TAG_NAME" | grep -Eq '^v[0-9]+\.'; then
+            echo "Tag '$TAG_NAME' is not a vN.N.N release tag; skipping."
+            exit 0
+          fi
+
+          major="${TAG_NAME#v}"
+          major="v${major%%.*}"
+
+          # Resolve the commit the release tag points at (not the branch).
+          sha="$(git rev-parse "${TAG_NAME}^{commit}")"
+
+          echo "Moving major tag '$major' -> $sha (from release '$TAG_NAME')"
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag -f "$major" "$sha"
+          git push -f origin "refs/tags/$major"

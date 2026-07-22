@@ -38,7 +38,7 @@ export const fetchLatestMatchingTag = async (pattern: string) => {
   const tags = response.data
     .map((entry) => entry.ref.split('/').pop())
     .filter((tag): tag is string => tag !== undefined)
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   return tags.at(-1);
 };

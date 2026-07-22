@@ -7,7 +7,7 @@ class TagBuilder {
   private prefix: string | undefined;
 
   constructor(tagTemplate: string) {
-    this.tagTemplate = `${tagTemplate}`; // Deep copy
+    this.tagTemplate = tagTemplate;
   }
 
   public inject(templatePart: string, value: number) {
