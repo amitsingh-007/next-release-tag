@@ -5,14 +5,14 @@ pre-commit:
     # committed bundle, so exclude it from source lint/format.
     oxlint:
       priority: 1
-      glob: '*.{js,mjs,ts}'
+      glob: '*.{js,mjs,ts,mts}'
       exclude:
         - 'dist/**'
       run: pnpm oxlint --fix {staged_files}
       stage_fixed: true
     oxfmt:
       priority: 2
-      glob: '*.{js,mjs,ts}'
+      glob: '*.{js,mjs,ts,mts}'
       exclude:
         - 'dist/**'
       run: pnpm oxfmt {staged_files}
