@@ -37,6 +37,14 @@ jobs:
           major="${TAG_NAME#v}"
           major="v${major%%.*}"
 
+          # Don't move the major tag backward: skip if a newer <major>.x.x tag
+          # exists (e.g. a back-port v6.4.0 published after v6 already -> v6.5.0).
+          latest="$(git tag -l "${major}.*" | sort -V | tail -n1)"
+          if [ -n "$latest" ] && [ "$latest" != "$TAG_NAME" ]; then
+            echo "Newer release '$latest' exists for '$major'; not moving it back to '$TAG_NAME'."
+            exit 0
+          fi
+
           # Resolve the commit the release tag points at (not the branch).
           sha="$(git rev-parse "${TAG_NAME}^{commit}")"
 
