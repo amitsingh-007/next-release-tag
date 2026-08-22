@@ -25,14 +25,20 @@ export const fetchLatestMatchingTag = async (pattern: string) => {
   const octokit = getOctokit(githubToken);
   const { owner, repo } = context.repo;
 
-  // This API fetches all matching tags. it doesn't support pagination
+  // This endpoint returns all matching tags in a single response; it ignores
+  // the per_page/page pagination parameters (see github/docs issue #3863).
   const response = await octokit.rest.git.listMatchingRefs({
     owner,
     repo,
     ref: `tags/${pattern}`,
   });
 
-  const latestTagRef = response?.data?.at(-1)?.ref;
-  const latestTag = latestTagRef?.split('/')?.pop();
-  return latestTag;
+  // Refs come back in lexicographic order, so re-sort numerically to find the
+  // true latest tag (e.g. v1.10 > v1.9 and ...100 > ...99).
+  const tags = response.data
+    .map((entry) => entry.ref.split('/').pop())
+    .filter((tag): tag is string => tag !== undefined)
+    .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+  return tags.at(-1);
 };

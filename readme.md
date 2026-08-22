@@ -7,6 +7,7 @@
 - Supports prefix wildcard tag prefixes (e.g., `v*`) to automatically use the latest tag starting with the prefix. Only prefix-based wildcard matching is supported.
 - This action is recommended to be used with `softprops/action-gh-release` or `ncipollo/release-action` to create the release.
 - This action runs on GitHub Actions Node.js 24 runtime. The Node.js version used by your own project steps is independent.
+- You can pin the action to a floating major tag (e.g. `@v6`), which always tracks the latest `v6.x` release, or to an exact version (e.g. `@v6.5.0`) for reproducible builds.
 
 ## Inputs
 
@@ -37,11 +38,11 @@ jobs:
 
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Generate release tag
         id: generate_release_tag
-        uses: amitsingh-007/next-release-tag@v6.3.0
+        uses: amitsingh-007/next-release-tag@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: 'v'
@@ -65,7 +66,7 @@ This action supports a tag prefix which can be wildcard as well and is prepended
 - You cannot pass a value containing tag templates. These are reserved characters. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information.
 - Pass `''` to create the release tag without any prefix.
 - Pass any string. This will fetch the latest tag and prepend the specified prefix.
-- Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`).
+- Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`). The "latest" tag is determined by numeric ordering of the matching tags (so `v1.10` is considered newer than `v1.9`).
 
 ### Tag template
 

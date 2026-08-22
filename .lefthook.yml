@@ -1,0 +1,23 @@
+pre-commit:
+  parallel: false
+  commands:
+    # lint --fix first, then oxfmt; both re-stage their edits. dist/ is the
+    # committed bundle, so exclude it from source lint/format.
+    oxlint:
+      priority: 1
+      glob: '*.{js,mjs,ts,mts}'
+      exclude:
+        - 'dist/**'
+      run: pnpm oxlint --fix {staged_files}
+      stage_fixed: true
+    oxfmt:
+      priority: 2
+      glob: '*.{js,mjs,ts,mts}'
+      exclude:
+        - 'dist/**'
+      run: pnpm oxfmt {staged_files}
+      stage_fixed: true
+    # Rebuild and stage the committed bundle last so dist/ stays in sync with src/.
+    build-dist:
+      priority: 3
+      run: pnpm build && git add dist/
