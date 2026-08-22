@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getNewReleaseTag } from '../src/services/releaseService';
 import { AllowedParts, IAllowedTemplate } from '../src/types';
-import { validTemplates } from './testData';
-import { getTestCase } from './utils/testCase';
+import { getTestCase, validTemplates } from './utils/testCase';
 
 beforeEach(() => {
   vi.useFakeTimers();

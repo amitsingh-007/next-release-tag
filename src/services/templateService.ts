@@ -1,5 +1,4 @@
-import { AllowedParts, IAllowedTemplate } from '../types';
-import { type IPartsData } from '../types/template';
+import { AllowedParts, IAllowedTemplate, type IPartsData } from '../types';
 
 const getSeparator = (template: string) => {
   const withOnlySeparators = AllowedParts.reduce(
@@ -18,14 +17,13 @@ const getSeparator = (template: string) => {
   return withOnlySeparators[0];
 };
 
-const parse = (
+export const parseTemplate = (
   template: string,
   oldReleaseTag: string | null | undefined,
-  separator: string,
   tagPrefix: string
 ): IPartsData => {
+  const separator = getSeparator(template);
   const partsData = {
-    separator,
     oldFullYear: -1,
     oldShortYear: -1,
     oldMonth: -1,
@@ -91,13 +89,4 @@ const parse = (
     }
   });
   return partsData;
-};
-
-export const parseTemplate = (
-  template: string,
-  oldTag: string | null | undefined,
-  tagPrefix: string
-) => {
-  const separator = getSeparator(template);
-  return parse(template, oldTag, separator, tagPrefix);
 };

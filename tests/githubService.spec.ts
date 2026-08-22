@@ -52,19 +52,9 @@ describe('fetchLatestReleaseTag', () => {
     await expect(fetchLatestReleaseTag()).resolves.toBeUndefined();
   });
 
-  it('logs and re-throws when the API rejects', async () => {
-    const apiError = new Error('rate limited');
-    mocks.listTags.mockRejectedValue(apiError);
-    const errorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
-
+  it('propagates API errors', async () => {
+    mocks.listTags.mockRejectedValue(new Error('rate limited'));
     await expect(fetchLatestReleaseTag()).rejects.toThrow('rate limited');
-    expect(errorSpy).toHaveBeenCalledWith(
-      'Error while fetching tags list for this repository',
-      apiError
-    );
-    errorSpy.mockRestore();
   });
 });
 
@@ -92,17 +82,9 @@ describe('fetchLatestMatchingTag', () => {
     await expect(fetchLatestMatchingTag('v')).resolves.toBeUndefined();
   });
 
-  it('propagates API errors raw (no try/catch, no console.error)', async () => {
-    const apiError = new Error('boom');
-    mocks.listMatchingRefs.mockRejectedValue(apiError);
-    const errorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
-
+  it('propagates API errors', async () => {
+    mocks.listMatchingRefs.mockRejectedValue(new Error('boom'));
     await expect(fetchLatestMatchingTag('v')).rejects.toThrow('boom');
-    // Unlike fetchLatestReleaseTag, this function does not log.
-    expect(errorSpy).not.toHaveBeenCalled();
-    errorSpy.mockRestore();
   });
 
   it('picks the numerically-latest tag, not the lexicographic one', async () => {

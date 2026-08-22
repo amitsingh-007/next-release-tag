@@ -5,7 +5,6 @@ describe('parseTemplate', () => {
   it('parses yyyy and yy in the same template to distinct fields', () => {
     const parts = parseTemplate('yyyy.yy.i', '2025.25.05', '');
     expect(parts).toMatchObject({
-      separator: '.',
       oldFullYear: 2025,
       oldShortYear: 25,
       oldItr: 5,
@@ -20,7 +19,7 @@ describe('parseTemplate', () => {
   describe('multi-character separator (yy--mm--i)', () => {
     it('succeeds with a null old tag (first release, itr seeded to 0)', () => {
       const parts = parseTemplate('yy--mm--i', null, '');
-      expect(parts).toMatchObject({ separator: '-', oldItr: 0 });
+      expect(parts).toMatchObject({ oldItr: 0 });
     });
 
     it('throws with a non-null old tag due to empty split parts', () => {

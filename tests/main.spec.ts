@@ -39,22 +39,22 @@ afterEach(() => {
 describe('resolvePreviousTag', () => {
   it('returns the previous_tag override verbatim when provided', async () => {
     mockInputs({ previous_tag: 'v99.99.99' });
-    await expect(resolvePreviousTag('v')).resolves.toBe('v99.99.99');
+    await expect(resolvePreviousTag('v', false)).resolves.toBe('v99.99.99');
     expect(mocks.fetchLatestReleaseTag).not.toHaveBeenCalled();
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });
 
   it('returns the override even when the prefix is a wildcard', async () => {
     mockInputs({ previous_tag: 'v1.2.3' });
-    await expect(resolvePreviousTag('v*')).resolves.toBe('v1.2.3');
+    await expect(resolvePreviousTag('v', true)).resolves.toBe('v1.2.3');
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });
 
   it('fetches the latest matching tag for a wildcard prefix', async () => {
     mockInputs({ previous_tag: '' });
     mocks.fetchLatestMatchingTag.mockResolvedValue('v1.2.3');
-    await expect(resolvePreviousTag('v*')).resolves.toBe('v1.2.3');
-    // Wildcard is stripped via extractTagPrefix before the API call.
+    await expect(resolvePreviousTag('v', true)).resolves.toBe('v1.2.3');
+    // run() strips the wildcard via extractTagPrefix before calling.
     expect(mocks.fetchLatestMatchingTag).toHaveBeenCalledWith('v');
     expect(mocks.fetchLatestReleaseTag).not.toHaveBeenCalled();
   });
@@ -62,7 +62,7 @@ describe('resolvePreviousTag', () => {
   it('fetches the latest release tag for a normal prefix', async () => {
     mockInputs({ previous_tag: '' });
     mocks.fetchLatestReleaseTag.mockResolvedValue('v1.2.3');
-    await expect(resolvePreviousTag('v')).resolves.toBe('v1.2.3');
+    await expect(resolvePreviousTag('v', false)).resolves.toBe('v1.2.3');
     expect(mocks.fetchLatestReleaseTag).toHaveBeenCalledTimes(1);
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });

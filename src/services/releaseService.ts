@@ -1,7 +1,7 @@
-import { IAllowedTemplate } from '../types';
-import { type IPartsData } from '../types/template';
-import TagBuilder from './tagBuilder';
+import { IAllowedTemplate, type IPartsData } from '../types';
 import { parseTemplate } from './templateService';
+
+const pad = (value: number) => String(value).padStart(2, '0');
 
 const hasItemChanged = (old: number, cur: number) => old !== -1 && old !== cur;
 
@@ -44,12 +44,13 @@ export const getNewReleaseTag = (
   const { curFullYear, curShortYear, curMonth, curDay, newItr } =
     getNewPartsData(oldPartsData);
 
-  return new TagBuilder(tagTemplate)
-    .inject(IAllowedTemplate.fullYear, curFullYear)
-    .inject(IAllowedTemplate.shortYear, curShortYear)
-    .inject(IAllowedTemplate.month, curMonth)
-    .inject(IAllowedTemplate.day, curDay)
-    .inject(IAllowedTemplate.itr, newItr)
-    .addPrefix(tagPrefix)
-    .build();
+  // `yyyy` must be substituted before `yy`, otherwise it would match first.
+  const tag = tagTemplate
+    .replaceAll(IAllowedTemplate.fullYear, pad(curFullYear))
+    .replaceAll(IAllowedTemplate.shortYear, pad(curShortYear))
+    .replaceAll(IAllowedTemplate.month, pad(curMonth))
+    .replaceAll(IAllowedTemplate.day, pad(curDay))
+    .replaceAll(IAllowedTemplate.itr, pad(newItr));
+
+  return `${tagPrefix}${tag}`;
 };

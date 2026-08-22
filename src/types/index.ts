@@ -7,3 +7,11 @@ export const IAllowedTemplate = {
 } as const;
 
 export const AllowedParts = Object.values(IAllowedTemplate);
+
+export interface IPartsData {
+  oldFullYear: number;
+  oldShortYear: number;
+  oldMonth: number;
+  oldDay: number;
+  oldItr: number;
+}
