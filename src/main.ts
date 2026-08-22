@@ -6,7 +6,7 @@ import {
 import { getNewReleaseTag } from './services/releaseService';
 import { extractTagPrefix } from './utils';
 
-export const resolvePreviousTag = async (tagPrefix: string) => {
+export const resolvePreviousTag = async (tagPrefixInput: string) => {
   const previousTagOverride = getInput('previous_tag');
 
   // If a previous tag is provided, use it
@@ -14,23 +14,22 @@ export const resolvePreviousTag = async (tagPrefix: string) => {
     return previousTagOverride;
   }
 
-  // If its a prefix wildcard then fetch the latest matching tag
-  if (tagPrefix.endsWith('*')) {
-    return fetchLatestMatchingTag(extractTagPrefix(tagPrefix));
-  }
-
-  // If its a normal tag then fetch the latest release tag
-  return fetchLatestReleaseTag();
+  // extractTagPrefix only shortens the input when a trailing wildcard was
+  // present, so an unchanged value means there was no wildcard.
+  const tagPrefix = extractTagPrefix(tagPrefixInput);
+  return tagPrefix === tagPrefixInput
+    ? fetchLatestReleaseTag()
+    : fetchLatestMatchingTag(tagPrefix);
 };
 
 export const run = async (): Promise<void> => {
   try {
-    const tagPrefix = getInput('tag_prefix');
+    const tagPrefixInput = getInput('tag_prefix');
     const tagTemplate = getInput('tag_template');
-    const previousTagOverride = await resolvePreviousTag(tagPrefix);
+    const previousTagOverride = await resolvePreviousTag(tagPrefixInput);
 
     const newReleaseTag = getNewReleaseTag(
-      extractTagPrefix(tagPrefix),
+      extractTagPrefix(tagPrefixInput),
       tagTemplate,
       previousTagOverride
     );

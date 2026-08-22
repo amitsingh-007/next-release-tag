@@ -7,5 +7,5 @@
   "bracketSpacing": true,
   "endOfLine": "lf",
   "sortPackageJson": true,
-  "ignorePatterns": ["dist"]
+  "ignorePatterns": ["dist", ".github/workflows/pullfrog.yml"]
 }

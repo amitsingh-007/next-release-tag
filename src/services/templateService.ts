@@ -1,5 +1,12 @@
-import { AllowedParts, IAllowedTemplate } from '../types';
-import { type IPartsData } from '../types/template';
+import { AllowedParts, IAllowedTemplate, type IPartsData } from '../types';
+
+const PART_TO_FIELD: Record<string, keyof IPartsData | undefined> = {
+  [IAllowedTemplate.fullYear]: 'oldFullYear',
+  [IAllowedTemplate.shortYear]: 'oldShortYear',
+  [IAllowedTemplate.month]: 'oldMonth',
+  [IAllowedTemplate.day]: 'oldDay',
+  [IAllowedTemplate.itr]: 'oldItr',
+};
 
 const getSeparator = (template: string) => {
   const withOnlySeparators = AllowedParts.reduce(
@@ -18,14 +25,13 @@ const getSeparator = (template: string) => {
   return withOnlySeparators[0];
 };
 
-const parse = (
+export const parseTemplate = (
   template: string,
   oldReleaseTag: string | null | undefined,
-  separator: string,
   tagPrefix: string
 ): IPartsData => {
+  const separator = getSeparator(template);
   const partsData = {
-    separator,
     oldFullYear: -1,
     oldShortYear: -1,
     oldMonth: -1,
@@ -58,46 +64,12 @@ const parse = (
       );
     }
 
-    const oldTagPart = Number(oldTagPartStr);
-    switch (part) {
-      case IAllowedTemplate.fullYear: {
-        partsData.oldFullYear = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.shortYear: {
-        partsData.oldShortYear = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.month: {
-        partsData.oldMonth = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.day: {
-        partsData.oldDay = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.itr: {
-        partsData.oldItr = oldTagPart;
-        break;
-      }
-
-      default: {
-        throw new Error(`Template contains unrecognized character: ${part}`);
-      }
+    const field = PART_TO_FIELD[part];
+    if (!field) {
+      throw new Error(`Template contains unrecognized character: ${part}`);
     }
+
+    partsData[field] = Number(oldTagPartStr);
   });
   return partsData;
-};
-
-export const parseTemplate = (
-  template: string,
-  oldTag: string | null | undefined,
-  tagPrefix: string
-) => {
-  const separator = getSeparator(template);
-  return parse(template, oldTag, separator, tagPrefix);
 };

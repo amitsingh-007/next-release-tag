@@ -1,35 +1,9 @@
 import { IAllowedTemplate } from '../types';
-import { type IPartsData } from '../types/template';
-import TagBuilder from './tagBuilder';
 import { parseTemplate } from './templateService';
 
+const pad = (value: number) => String(value).padStart(2, '0');
+
 const hasItemChanged = (old: number, cur: number) => old !== -1 && old !== cur;
-
-const getNewPartsData = (partsData: IPartsData) => {
-  const { oldFullYear, oldShortYear, oldMonth, oldDay, oldItr } = partsData;
-  const curDate = new Date();
-  const curFullYear = curDate.getFullYear();
-  const curShortYear = curFullYear % 100;
-  const curMonth = curDate.getMonth() + 1;
-  const curDay = curDate.getDate();
-  let newItr = oldItr + 1;
-  if (
-    hasItemChanged(oldFullYear, curFullYear) ||
-    hasItemChanged(oldShortYear, curShortYear) ||
-    hasItemChanged(oldMonth, curMonth) ||
-    hasItemChanged(oldDay, curDay)
-  ) {
-    newItr = 1;
-  }
-
-  return {
-    curFullYear,
-    curShortYear,
-    curMonth,
-    curDay,
-    newItr,
-  };
-};
 
 export const getNewReleaseTag = (
   tagPrefix: string,
@@ -40,16 +14,26 @@ export const getNewReleaseTag = (
     throw new Error('Template not found');
   }
 
-  const oldPartsData = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
-  const { curFullYear, curShortYear, curMonth, curDay, newItr } =
-    getNewPartsData(oldPartsData);
+  const old = parseTemplate(tagTemplate, oldReleaseTag, tagPrefix);
+  const now = new Date();
+  const fullYear = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  // Only date parts the template actually carries can reset the iteration;
+  // parseTemplate leaves the absent ones at -1.
+  const dateChanged =
+    hasItemChanged(old.oldFullYear, fullYear) ||
+    hasItemChanged(old.oldShortYear, fullYear % 100) ||
+    hasItemChanged(old.oldMonth, month) ||
+    hasItemChanged(old.oldDay, day);
 
-  return new TagBuilder(tagTemplate)
-    .inject(IAllowedTemplate.fullYear, curFullYear)
-    .inject(IAllowedTemplate.shortYear, curShortYear)
-    .inject(IAllowedTemplate.month, curMonth)
-    .inject(IAllowedTemplate.day, curDay)
-    .inject(IAllowedTemplate.itr, newItr)
-    .addPrefix(tagPrefix)
-    .build();
+  // `yyyy` must be substituted before `yy`, otherwise it would match first.
+  const tag = tagTemplate
+    .replaceAll(IAllowedTemplate.fullYear, pad(fullYear))
+    .replaceAll(IAllowedTemplate.shortYear, pad(fullYear % 100))
+    .replaceAll(IAllowedTemplate.month, pad(month))
+    .replaceAll(IAllowedTemplate.day, pad(day))
+    .replaceAll(IAllowedTemplate.itr, pad(dateChanged ? 1 : old.oldItr + 1));
+
+  return `${tagPrefix}${tag}`;
 };
