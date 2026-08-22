@@ -12,255 +12,102 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe('test valid cases without prefix', () => {
-  it('should return tag when no old release tag exists', () => {
-    vi.setSystemTime(new Date('2022-10-13'));
-    const actualTag = getNewReleaseTag('', 'yy.mm.dd.i', null);
-    expect(actualTag).toBe('22.10.13.01');
-  });
-  it.each(validTemplates)(
-    'should return changed itr for same date for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2022-10-13'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldItr: 4,
-        newItr: 5,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed day for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2022-10-13'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-10-10'),
-        oldItr: 4,
-        newItr: template.includes(IAllowedTemplate.day) ? 1 : 5,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed month for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2022-10-12'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-01-12'),
-        oldItr: 1,
-        newItr: template.includes(IAllowedTemplate.month) ? 1 : 2,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-09-28'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-09-28'),
-        oldItr: 41,
-        newItr:
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear)
-            ? 1
-            : 42,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed month/year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-04-18'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-11-18'),
-        oldItr: 166,
-        newItr:
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear) ||
-          template.includes(IAllowedTemplate.month)
-            ? 1
-            : 167,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed date/month for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-06-15'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2023-03-25'),
-        oldItr: 5,
-        newItr:
-          template.includes(IAllowedTemplate.day) ||
-          template.includes(IAllowedTemplate.month)
-            ? 1
-            : 6,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed date/year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-12-11'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2021-12-17'),
-        oldItr: 12,
-        newItr:
-          template.includes(IAllowedTemplate.day) ||
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear)
-            ? 1
-            : 13,
-      });
-      const actualTag = getNewReleaseTag('', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-});
+const { fullYear, shortYear, month, day } = IAllowedTemplate;
 
-describe('test valid cases with prefix', () => {
-  it('should return tag when no old release tag exists', () => {
-    vi.setSystemTime(new Date('2022-10-13'));
-    const actualTag = getNewReleaseTag('v', 'yy.mm.dd.i', null);
-    expect(actualTag).toBe('v22.10.13.01');
-  });
-  it.each(validTemplates)(
-    'should return changed itr for same date for template: %s',
-    (template) => {
+// Each scenario pairs a date change with the tokens that must reset the
+// iteration when the template carries them. Every scenario runs against no
+// prefix as well as its own, so prefix handling is covered without duplicating
+// the table.
+const SCENARIOS = [
+  {
+    name: 'same date',
+    now: '2022-10-13',
+    old: '2022-10-13',
+    oldItr: 4,
+    prefix: 'v',
+    resetOn: [],
+  },
+  {
+    name: 'changed day',
+    now: '2022-10-13',
+    old: '2022-10-10',
+    oldItr: 4,
+    prefix: 'abc',
+    resetOn: [day],
+  },
+  {
+    name: 'changed month',
+    now: '2022-10-12',
+    old: '2022-01-12',
+    oldItr: 1,
+    prefix: 'v',
+    resetOn: [month],
+  },
+  {
+    name: 'changed year',
+    now: '2023-09-28',
+    old: '2022-09-28',
+    oldItr: 41,
+    prefix: '10',
+    resetOn: [fullYear, shortYear],
+  },
+  {
+    name: 'changed month and year',
+    now: '2023-04-18',
+    old: '2022-11-18',
+    oldItr: 166,
+    prefix: '@',
+    resetOn: [fullYear, shortYear, month],
+  },
+  {
+    name: 'changed day and month',
+    now: '2023-06-15',
+    old: '2023-03-25',
+    oldItr: 5,
+    prefix: '__',
+    resetOn: [day, month],
+  },
+  {
+    name: 'changed day and year',
+    now: '2023-12-11',
+    old: '2021-12-17',
+    oldItr: 12,
+    prefix: '_v_',
+    resetOn: [day, fullYear, shortYear],
+  },
+];
+
+const CASES = SCENARIOS.flatMap((scenario) =>
+  ['', scenario.prefix].flatMap((prefix) =>
+    validTemplates.map((template) => ({ scenario, prefix, template }))
+  )
+);
+
+describe('test valid cases', () => {
+  it.each(['', 'v'])(
+    'should return tag when no old release tag exists for prefix "%s"',
+    (prefix) => {
       vi.setSystemTime(new Date('2022-10-13'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldItr: 4,
-        newItr: 5,
-        prefix: 'v',
-      });
-      const actualTag = getNewReleaseTag('v', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
+      expect(getNewReleaseTag(prefix, 'yy.mm.dd.i', null)).toBe(
+        `${prefix}22.10.13.01`
+      );
     }
   );
-  it.each(validTemplates)(
-    'should return reset itr for changed day for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2022-10-13'));
+
+  it.each(CASES)(
+    '$scenario.name with prefix "$prefix" for template $template',
+    ({ scenario, prefix, template }) => {
+      const { now, old, oldItr, resetOn } = scenario;
+      vi.setSystemTime(new Date(now));
+      const resets = resetOn.some((token) => template.includes(token));
       const { oldTag, expectedTag } = getTestCase({
         template,
-        oldDate: new Date('2022-10-10'),
-        oldItr: 4,
-        newItr: template.includes(IAllowedTemplate.day) ? 1 : 5,
-        prefix: 'abc',
+        oldDate: new Date(old),
+        oldItr,
+        newItr: resets ? 1 : oldItr + 1,
+        prefix,
       });
-      const actualTag = getNewReleaseTag('abc', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed month for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2022-10-12'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-01-12'),
-        oldItr: 1,
-        newItr: template.includes(IAllowedTemplate.month) ? 1 : 2,
-        prefix: 'v',
-      });
-      const actualTag = getNewReleaseTag('v', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-09-28'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-09-28'),
-        oldItr: 41,
-        newItr:
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear)
-            ? 1
-            : 42,
-        prefix: '10',
-      });
-      const actualTag = getNewReleaseTag('10', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed month/year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-04-18'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2022-11-18'),
-        oldItr: 166,
-        newItr:
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear) ||
-          template.includes(IAllowedTemplate.month)
-            ? 1
-            : 167,
-        prefix: '@',
-      });
-      const actualTag = getNewReleaseTag('@', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed date/month for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-06-15'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2023-03-25'),
-        oldItr: 5,
-        newItr:
-          template.includes(IAllowedTemplate.day) ||
-          template.includes(IAllowedTemplate.month)
-            ? 1
-            : 6,
-        prefix: '__',
-      });
-      const actualTag = getNewReleaseTag('__', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
-    }
-  );
-  it.each(validTemplates)(
-    'should return reset itr for changed date/year for template: %s',
-    (template) => {
-      vi.setSystemTime(new Date('2023-12-11'));
-      const { oldTag, expectedTag } = getTestCase({
-        template,
-        oldDate: new Date('2021-12-17'),
-        oldItr: 12,
-        newItr:
-          template.includes(IAllowedTemplate.day) ||
-          template.includes(IAllowedTemplate.fullYear) ||
-          template.includes(IAllowedTemplate.shortYear)
-            ? 1
-            : 13,
-        prefix: '_v_',
-      });
-      const actualTag = getNewReleaseTag('_v_', template, oldTag);
-      expect(actualTag).toBe(expectedTag);
+      expect(getNewReleaseTag(prefix, template, oldTag)).toBe(expectedTag);
     }
   );
 });

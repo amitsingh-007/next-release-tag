@@ -1,5 +1,13 @@
 import { AllowedParts, IAllowedTemplate, type IPartsData } from '../types';
 
+const PART_TO_FIELD: Record<string, keyof IPartsData | undefined> = {
+  [IAllowedTemplate.fullYear]: 'oldFullYear',
+  [IAllowedTemplate.shortYear]: 'oldShortYear',
+  [IAllowedTemplate.month]: 'oldMonth',
+  [IAllowedTemplate.day]: 'oldDay',
+  [IAllowedTemplate.itr]: 'oldItr',
+};
+
 const getSeparator = (template: string) => {
   const withOnlySeparators = AllowedParts.reduce(
     (acc, curVal) => acc.replaceAll(curVal, ''),
@@ -56,37 +64,12 @@ export const parseTemplate = (
       );
     }
 
-    const oldTagPart = Number(oldTagPartStr);
-    switch (part) {
-      case IAllowedTemplate.fullYear: {
-        partsData.oldFullYear = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.shortYear: {
-        partsData.oldShortYear = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.month: {
-        partsData.oldMonth = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.day: {
-        partsData.oldDay = oldTagPart;
-        break;
-      }
-
-      case IAllowedTemplate.itr: {
-        partsData.oldItr = oldTagPart;
-        break;
-      }
-
-      default: {
-        throw new Error(`Template contains unrecognized character: ${part}`);
-      }
+    const field = PART_TO_FIELD[part];
+    if (!field) {
+      throw new Error(`Template contains unrecognized character: ${part}`);
     }
+
+    partsData[field] = Number(oldTagPartStr);
   });
   return partsData;
 };

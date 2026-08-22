@@ -5,7 +5,6 @@ const mocks = vi.hoisted(() => ({
   getInput: vi.fn<(name: string) => string>(),
   setOutput: vi.fn(),
   setFailed: vi.fn(),
-  error: vi.fn(),
   fetchLatestMatchingTag: vi.fn(),
   fetchLatestReleaseTag: vi.fn(),
 }));
@@ -14,7 +13,6 @@ vi.mock('@actions/core', () => ({
   getInput: mocks.getInput,
   setOutput: mocks.setOutput,
   setFailed: mocks.setFailed,
-  error: mocks.error,
 }));
 
 vi.mock('../src/services/githubService', () => ({
@@ -39,22 +37,22 @@ afterEach(() => {
 describe('resolvePreviousTag', () => {
   it('returns the previous_tag override verbatim when provided', async () => {
     mockInputs({ previous_tag: 'v99.99.99' });
-    await expect(resolvePreviousTag('v', false)).resolves.toBe('v99.99.99');
+    await expect(resolvePreviousTag('v')).resolves.toBe('v99.99.99');
     expect(mocks.fetchLatestReleaseTag).not.toHaveBeenCalled();
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });
 
   it('returns the override even when the prefix is a wildcard', async () => {
     mockInputs({ previous_tag: 'v1.2.3' });
-    await expect(resolvePreviousTag('v', true)).resolves.toBe('v1.2.3');
+    await expect(resolvePreviousTag('v*')).resolves.toBe('v1.2.3');
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });
 
   it('fetches the latest matching tag for a wildcard prefix', async () => {
     mockInputs({ previous_tag: '' });
     mocks.fetchLatestMatchingTag.mockResolvedValue('v1.2.3');
-    await expect(resolvePreviousTag('v', true)).resolves.toBe('v1.2.3');
-    // run() strips the wildcard via extractTagPrefix before calling.
+    await expect(resolvePreviousTag('v*')).resolves.toBe('v1.2.3');
+    // Wildcard is stripped via extractTagPrefix before the API call.
     expect(mocks.fetchLatestMatchingTag).toHaveBeenCalledWith('v');
     expect(mocks.fetchLatestReleaseTag).not.toHaveBeenCalled();
   });
@@ -62,7 +60,7 @@ describe('resolvePreviousTag', () => {
   it('fetches the latest release tag for a normal prefix', async () => {
     mockInputs({ previous_tag: '' });
     mocks.fetchLatestReleaseTag.mockResolvedValue('v1.2.3');
-    await expect(resolvePreviousTag('v', false)).resolves.toBe('v1.2.3');
+    await expect(resolvePreviousTag('v')).resolves.toBe('v1.2.3');
     expect(mocks.fetchLatestReleaseTag).toHaveBeenCalledTimes(1);
     expect(mocks.fetchLatestMatchingTag).not.toHaveBeenCalled();
   });
@@ -119,6 +117,23 @@ describe('run', () => {
     expect(mocks.setOutput).not.toHaveBeenCalled();
   });
 
+  it('strips a trailing wildcard before fetching matching tags', async () => {
+    vi.setSystemTime(new Date('2026-07-21'));
+    vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    mockInputs({ tag_prefix: 'v*', tag_template: 'yy.mm.i' });
+    mocks.fetchLatestMatchingTag.mockResolvedValue('v26.07.01');
+
+    await run();
+
+    expect(mocks.fetchLatestMatchingTag).toHaveBeenCalledWith('v');
+    expect(mocks.fetchLatestReleaseTag).not.toHaveBeenCalled();
+    expect(mocks.setOutput).toHaveBeenCalledWith(
+      'next_release_tag',
+      'v26.07.02'
+    );
+    expect(mocks.setFailed).not.toHaveBeenCalled();
+  });
+
   it('calls setFailed when the tag prefix is invalid', async () => {
     mockInputs({ tag_prefix: 'v**', tag_template: 'yy.mm.i' });
 
@@ -135,7 +150,6 @@ describe('run', () => {
     await run();
 
     expect(mocks.setFailed).toHaveBeenCalledWith(JSON.stringify('boom'));
-    expect(mocks.error).not.toHaveBeenCalled();
     expect(mocks.setOutput).not.toHaveBeenCalled();
   });
 });

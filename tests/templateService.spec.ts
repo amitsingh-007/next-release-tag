@@ -29,6 +29,12 @@ describe('parseTemplate', () => {
     });
   });
 
+  it('throws for a template part that is not a known token', () => {
+    expect(() => parseTemplate('yy..i', '26.5.1', '')).toThrow(
+      'Template contains unrecognized character: '
+    );
+  });
+
   it('throws when the old tag is only the prefix (empty remainder)', () => {
     expect(() => parseTemplate('yy.mm.i', 'v', 'v')).toThrow(
       'Template does not represent last release tag'
