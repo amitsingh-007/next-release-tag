@@ -21,7 +21,7 @@
     "@actions/github": "9.1.1"
   },
   "devDependencies": {
-    "@types/node": "26.1.1",
+    "@types/node": "26.4.0",
     "lefthook": "2.1.10",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
