@@ -18,7 +18,7 @@ It only generates the tag. It does **not** create the release; pass the output t
 ## Features
 
 - Template tokens for full year, short year, month, day and iteration count
-- The iteration count goes back to `01` whenever the date part of the tag changes
+- The iteration count goes back to `01` whenever a date token in the template changes
 - Optional tag prefix, including a trailing `*` wildcard that picks the highest matching tag in numeric order (`v1.10` beats `v1.9`)
 - A `previous_tag` input to skip the lookup and bump from a tag you choose
 - Runs on the Node.js 24 Actions runtime, independent of the Node version your own steps use
@@ -76,19 +76,20 @@ jobs:
 
 The template is the tag's format without the prefix. It is built from these tokens:
 
-| Token  | Meaning                     | Example (Sep 26, 2026) |
-| ------ | --------------------------- | ---------------------- |
-| `yyyy` | Full year                   | `2026`                 |
-| `yy`   | Short year                  | `26`                   |
-| `mm`   | Month                       | `09`                   |
-| `dd`   | Day of the month            | `26`                   |
-| `i`    | Iteration count for the day | `01`, `02`, ...        |
+| Token  | Meaning                                      | Example (Sep 26, 2026) |
+| ------ | -------------------------------------------- | ---------------------- |
+| `yyyy` | Full year                                    | `2026`                 |
+| `yy`   | Short year                                   | `26`                   |
+| `mm`   | Month                                        | `09`                   |
+| `dd`   | Day of the month                             | `26`                   |
+| `i`    | Iteration count for the date in the template | `01`, `02`, ...        |
 
 Rules:
 
 - Put a separator between every pair of tokens, e.g. `yyyy.mm.i`.
 - Use one separator character and stick to it. `yy-mm-dd.i` fails because it mixes `-` and `.`.
-- The separator can't contain token letters, and it can't start or end the template (`.yy.mm.i.` is invalid).
+- The separator can't contain token letters.
+- Don't start or end the template with a separator (`.yy.mm.i.`). On a repository with no tags the action doesn't catch this: it emits a malformed tag like `.26.09.01.`, and the next run fails to parse it.
 - Numbers are zero-padded to at least two digits.
 - The iteration count resets to `01` when any date token in the template changes from the previous tag. With `yyyy.mm.i`, a new month resets it; a new day doesn't.
 - If the repository has no tags yet, the first tag gets iteration `01`.
@@ -111,7 +112,7 @@ The prefix goes in front of the generated tag. It also decides how the action fi
 | `v`          | Most recent tag in the repository, which must start with `v` | `v2026.09.26.01`    |
 | `v-*`        | Highest tag starting with `v-`, sorted numerically           | `v-2026.09.26.01`   |
 
-A wildcard prefix may hold a single `*`, and it has to be the last character. The `*` never appears in the output. The prefix itself can't contain template tokens.
+A wildcard prefix may hold a single `*`, and it has to be the last character. The `*` never appears in the output.
 
 Use the wildcard when the repository has other tags mixed in (for example `docs-*` tags next to `v*` releases). Without it the action takes the newest tag GitHub returns and fails if that tag doesn't match your prefix.
 
@@ -119,13 +120,13 @@ Use the wildcard when the repository has other tags mixed in (for example `docs-
 
 1. The action finds the previous tag: `previous_tag` if you set it, otherwise a lookup through the GitHub API based on `tag_prefix`.
 2. It strips the prefix and splits the rest of the tag using the template, reading the old year, month, day and iteration.
-3. It fills the template with today's date. If any date value differs from the previous tag, the iteration becomes `01`; otherwise it goes up by one.
+3. It fills the template with today's date. If any date token in the template has a different value than in the previous tag, the iteration becomes `01`; otherwise it goes up by one.
 
 The date comes from the runner's clock. GitHub-hosted runners use UTC, so a release made close to midnight in your timezone can end up with the previous or next day's date.
 
 ## Versioning
 
-Pin to the major tag (`@v6`) to get every `v6.x` release automatically, or to an exact version (`@v6.5.0`) if you want builds that never change underneath you.
+Pin to the major tag (`@v6`) to get every `v6.x` release automatically, or to an exact version (`@v6.5.0`) to avoid automatic upgrades.
 
 ## Contributing
 
