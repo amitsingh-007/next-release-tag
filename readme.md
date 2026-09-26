@@ -1,31 +1,30 @@
-# Generate Next Release Tag
+<div align="center">
 
-- This is a GitHub Action that automates the process of creating the next release tag version for your repository. Note: it generates a new release version, but it does not create a new release.
-- The action sets an output variable named `next_release_tag`, which can be used to create the next release.
-- It uses the previous release tag and increments it based on the year, month, date, and iteration count.
-- The action supports creating release tags based on the template given to the action. Refer to the [Templating System](https://github.com/amitsingh-007/next-release-tag#templating-system) section for more information.
-- Supports prefix wildcard tag prefixes (e.g., `v*`) to automatically use the latest tag starting with the prefix. Only prefix-based wildcard matching is supported.
-- This action is recommended to be used with `softprops/action-gh-release` or `ncipollo/release-action` to create the release.
-- This action runs on GitHub Actions Node.js 24 runtime. The Node.js version used by your own project steps is independent.
-- You can pin the action to a floating major tag (e.g. `@v6`), which always tracks the latest `v6.x` release, or to an exact version (e.g. `@v6.5.0`) for reproducible builds.
+# Next Release Tag
 
-## Inputs
+A GitHub Action that works out your next date-based release tag from the previous one.
 
-`github_token`: The Github Secret `GITHUB_TOKEN` or `Personal Access Token`. This is a required input.
+[![Release](https://img.shields.io/github/v/release/amitsingh-007/next-release-tag)](https://github.com/amitsingh-007/next-release-tag/releases)
+[![Test](https://github.com/amitsingh-007/next-release-tag/actions/workflows/test.yml/badge.svg)](https://github.com/amitsingh-007/next-release-tag/actions/workflows/test.yml)
+[![Marketplace](https://img.shields.io/badge/marketplace-next--release--tag-blue?logo=github)](https://github.com/marketplace/actions/auto-generate-next-release-tag)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](licence)
 
-`tag_prefix`: The prefix to be added to the generated release tag. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-prefix) for more information.
+</div>
 
-`tag_template`: A preconfigured static template based on which the new release tag will be generated. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information. This is a required input.
+You describe the tag format with a template like `yyyy.mm.dd.i`. The action reads your latest tag, fills in today's date, and bumps the iteration count, so the second release on September 26, 2026 comes out as `v2026.09.26.02`.
 
-`previous_tag`: Pass this to override the automatically detected previous tag instead of fetching it. This is an optional input.
+It only generates the tag. It does **not** create the release; pass the output to a release action for that.
 
-## Outputs
+## Features
 
-`next_release_tag`: This output variable contains the next release version and is set by the action. You can access it via `step.<id>.outputs.next_release_tag`.
+- Template tokens for full year, short year, month, day and iteration count
+- The iteration count goes back to `01` whenever the date part of the tag changes
+- Optional tag prefix, including a trailing `*` wildcard that picks the highest matching tag in numeric order (`v1.10` beats `v1.9`)
+- A `previous_tag` input to skip the lookup and bump from a tag you choose
+- Runs on the Node.js 24 Actions runtime, independent of the Node version your own steps use
+- Pairs with [`softprops/action-gh-release`](https://github.com/softprops/action-gh-release) or [`ncipollo/release-action`](https://github.com/ncipollo/release-action)
 
-`prev_release_tag`: Additionally, the action also sets this output variable, which contains the previous release version. You can access it via `step.<id>.outputs.prev_release_tag`.
-
-## Example workflow
+## Quick start
 
 ```yaml
 name: Create Release
@@ -53,30 +52,85 @@ jobs:
         with:
           name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
           tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
 ```
 
-## Templating System
+## Inputs
 
-### Tag prefix
+| Name           | Required | Default | Description                                                                                        |
+| -------------- | -------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `github_token` | Yes      |         | `secrets.GITHUB_TOKEN` or a personal access token. Used to read the repository's tags.             |
+| `tag_prefix`   | Yes      |         | Text put in front of the generated tag. Pass `''` for no prefix. See [Tag prefix](#tag-prefix).    |
+| `tag_template` | Yes      |         | Format of the tag without the prefix, e.g. `yyyy.mm.i`. See [Tag template](#tag-template).         |
+| `previous_tag` | No       |         | Use this tag as the previous release instead of looking it up. Must match the prefix and template. |
 
-This action supports a tag prefix which can be wildcard as well and is prepended to the final release tag. This prefix is also used to fetch the last release based on which new release tag is created. It supports following values:
+## Outputs
 
-- You cannot pass a value containing tag templates. These are reserved characters. Check [this section](https://github.com/amitsingh-007/next-release-tag#tag-template) for more information.
-- Pass `''` to create the release tag without any prefix.
-- Pass any string. This will fetch the latest tag and prepend the specified prefix.
-- Pass a prefix with `*` to use a wildcard. Only a single prefix wildcard is supported (e.g., `v-*`). This will fetch the latest tag matching the given wildcard, and the resulting tag will be prepended without the wildcard (e.g., `v-<tag>`). The "latest" tag is determined by numeric ordering of the matching tags (so `v1.10` is considered newer than `v1.9`).
+| Name               | Description                                                                                  |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `next_release_tag` | The generated tag. Read it with `steps.<id>.outputs.next_release_tag`.                       |
+| `prev_release_tag` | The previous tag the action bumped from. Read it with `steps.<id>.outputs.prev_release_tag`. |
 
-### Tag template
+## Tag template
 
-This action supports a flexible templating system with a few constraints. Users must pass the `tag_template` option in the action, and the action will fill in the corresponding values based on the template to generate a new release tag. The following are the rules and constraints:
+The template is the tag's format without the prefix. It is built from these tokens:
 
-- The template represents the final release tag's format without the tag prefix. You must pass the tag prefix separately.
-- The allowed template tokens are: `yyyy` (full year), `yy` (short year), `mm` (month), `dd` (date), `i` (iteration count).
-- Each of these tokens must be combined with a separator to form the template (e.g., `yyyy.mm.i`).
-- Separators cannot be at the beginning or end of the template (e.g., `.yy.mm.i.` is not allowed).
-- A separator can be any string, but it cannot contain the above-mentioned tokens.
-- Only a single kind of separator is allowed in the string (e.g., `yy-mm-dd.i` is not allowed).
-- The iteration count resets to `01` when any of the year, month, or date is changed between the last release and the current release.
-- The final generated release tag will be in the format: `<tag_prefix><filled-in tag_template>` (e.g., if the tag_prefix is `v` and the tag_template is `yyyy.mm.dd.i`, then the second release on June 21, 2024, will be `v2024.06.21.02`).
+| Token  | Meaning                     | Example (Sep 26, 2026) |
+| ------ | --------------------------- | ---------------------- |
+| `yyyy` | Full year                   | `2026`                 |
+| `yy`   | Short year                  | `26`                   |
+| `mm`   | Month                       | `09`                   |
+| `dd`   | Day of the month            | `26`                   |
+| `i`    | Iteration count for the day | `01`, `02`, ...        |
+
+Rules:
+
+- Put a separator between every pair of tokens, e.g. `yyyy.mm.i`.
+- Use one separator character and stick to it. `yy-mm-dd.i` fails because it mixes `-` and `.`.
+- The separator can't contain token letters, and it can't start or end the template (`.yy.mm.i.` is invalid).
+- Numbers are zero-padded to at least two digits.
+- The iteration count resets to `01` when any date token in the template changes from the previous tag. With `yyyy.mm.i`, a new month resets it; a new day doesn't.
+- If the repository has no tags yet, the first tag gets iteration `01`.
+
+Examples, run on September 26, 2026:
+
+| `tag_prefix` | `tag_template` | Previous tag     | Next tag             |
+| ------------ | -------------- | ---------------- | -------------------- |
+| `v`          | `yyyy.mm.dd.i` | `v2026.09.26.01` | `v2026.09.26.02`     |
+| `''`         | `yy.mm.i`      | `26.08.04`       | `26.09.01`           |
+| `release-`   | `yyyy-mm-i`    | none             | `release-2026-09-01` |
+
+## Tag prefix
+
+The prefix goes in front of the generated tag. It also decides how the action finds the previous tag.
+
+| `tag_prefix` | Previous tag lookup                                          | Next tag looks like |
+| ------------ | ------------------------------------------------------------ | ------------------- |
+| `''`         | Most recent tag in the repository                            | `2026.09.26.01`     |
+| `v`          | Most recent tag in the repository, which must start with `v` | `v2026.09.26.01`    |
+| `v-*`        | Highest tag starting with `v-`, sorted numerically           | `v-2026.09.26.01`   |
+
+A wildcard prefix may hold a single `*`, and it has to be the last character. The `*` never appears in the output. The prefix itself can't contain template tokens.
+
+Use the wildcard when the repository has other tags mixed in (for example `docs-*` tags next to `v*` releases). Without it the action takes the newest tag GitHub returns and fails if that tag doesn't match your prefix.
+
+## How it works
+
+1. The action finds the previous tag: `previous_tag` if you set it, otherwise a lookup through the GitHub API based on `tag_prefix`.
+2. It strips the prefix and splits the rest of the tag using the template, reading the old year, month, day and iteration.
+3. It fills the template with today's date. If any date value differs from the previous tag, the iteration becomes `01`; otherwise it goes up by one.
+
+The date comes from the runner's clock. GitHub-hosted runners use UTC, so a release made close to midnight in your timezone can end up with the previous or next day's date.
+
+## Versioning
+
+Pin to the major tag (`@v6`) to get every `v6.x` release automatically, or to an exact version (`@v6.5.0`) if you want builds that never change underneath you.
+
+## Contributing
+
+See [contributing.md](contributing.md) for local setup, scripts and the release process.
+
+## License
+
+[MIT](licence)
