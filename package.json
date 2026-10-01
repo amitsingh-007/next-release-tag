@@ -25,7 +25,7 @@
     "lefthook": "2.1.10",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "oxlint-tsgolint": "7.0.2003",
     "tsdown": "0.22.12",
     "typescript": "7.0.2",
     "vitest": "4.1.11"
